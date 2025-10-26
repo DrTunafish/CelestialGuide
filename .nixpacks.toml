@@ -2,11 +2,11 @@
 nixPkgs = ["python312", "python312Packages.pip"]
 
 [phases.install]
-cmds = ["cd backend && pip install -r requirements.txt"]
+cmds = ["pip install -r backend/requirements.txt"]
 
 [phases.build]
-cmds = ["cd backend"]
+cmds = ["echo 'Build complete'"]
 
 [start]
-cmd = "cd backend && python main.py"
+cmd = "python backend/main.py"
 
