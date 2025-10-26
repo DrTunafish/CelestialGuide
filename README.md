@@ -299,31 +299,37 @@ Frontend runs on: `http://localhost:3000`
 
 ## 🚢 Deployment
 
-### Railway.app (Recommended)
-
-Railway provides free tier for both frontend and backend:
+### Render.com (Recommended)
 
 **Backend Deployment**:
 1. Push to GitHub
-2. Connect to Railway.app
-3. Set root directory to `backend`
-4. Add environment variables:
-   - `OPENCAGE_API_KEY`
-   - `OPENWEATHERMAP_API_KEY`
-   - `GEMINI_API_KEY` (optional)
-5. Railway auto-deploys
+2. Connect to Render.com
+3. Create new Web Service
+4. Select your repository
+5. Configure:
+   - **Root Directory**: `backend`
+   - **Build Command**: Automatic (uses render.yaml)
+   - **Start Command**: Automatic (uses render.yaml)
+6. Add environment variables:
+   - `OPENCAGE_API_KEY=your_opencage_key`
+   - `OPENWEATHERMAP_API_KEY=your_openweather_key`
+   - `GEMINI_API_KEY=your_gemini_key` (optional)
+   - `FRONTEND_URL=https://your-frontend.vercel.app` (for CORS)
+7. Deploy automatically
 
 **Frontend Deployment (Vercel)**:
 1. Connect GitHub repo to Vercel
 2. Set root directory to `frontend`
 3. Add environment variable:
-   - `VITE_API_URL=https://your-backend.railway.app`
+   - `VITE_API_URL=https://your-backend.onrender.com`
 4. Vercel auto-deploys
 
-**Alternative**: Both on Railway
-- Deploy backend as Python service
-- Deploy frontend as Node.js service
-- Set up internal networking
+**Features**:
+- ✅ Automatic catalog initialization on first deploy
+- ✅ Persistent disk storage for SQLite database
+- ✅ Production-optimized CORS settings
+- ✅ Health check endpoints
+- ✅ Python 3.13 support
 
 ---
 

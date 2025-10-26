@@ -35,10 +35,16 @@ def main():
     # Step 2: Check if catalogs are already loaded
     if check_catalog_loaded():
         print("Catalogs are already loaded in the database.")
-        response = input("Do you want to reload catalogs? (y/N): ").strip().lower()
-        if response != 'y':
+        # In production, skip interactive prompt
+        if os.getenv("ENVIRONMENT") == "production":
+            print("Production environment detected - skipping catalog reload")
             print("Setup complete!")
             sys.exit(0)
+        else:
+            response = input("Do you want to reload catalogs? (y/N): ").strip().lower()
+            if response != 'y':
+                print("Setup complete!")
+                sys.exit(0)
     
     # Step 3: Download and load catalogs
     print("Step 2: Downloading and loading astronomical catalogs...")
