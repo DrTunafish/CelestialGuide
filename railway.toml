@@ -1,5 +1,6 @@
 [build]
 builder = "NIXPACKS"
+watchPatterns = ["backend/**"]
 
 [deploy]
 startCommand = "cd backend && python main.py"
@@ -10,4 +11,5 @@ restartPolicyMaxRetries = 10
 
 [environments.production.variables]
 PORT = "8000"
+WORKING_DIRECTORY = "backend"
 
