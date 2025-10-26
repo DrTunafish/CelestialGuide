@@ -7,7 +7,7 @@ services:
     startCommand: python main.py
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.4
+        value: 3.13.4
       - key: OPENCAGE_API_KEY
         sync: false
       - key: OPENWEATHERMAP_API_KEY
