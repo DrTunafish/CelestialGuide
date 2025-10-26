@@ -6,9 +6,9 @@ pydantic==2.5.3
 pydantic-settings==2.1.0
 
 # Astronomical Calculations
-skyfield==1.48
-numpy==1.26.3
-pandas==2.2.0
+skyfield>=1.47
+numpy>=1.24.0
+pandas>=2.0.0
 pyswisseph==2.10.3.2  # Swiss Ephemeris for astrology calculations
 pytz==2024.1  # Timezone support for astrology
 
@@ -16,8 +16,8 @@ pytz==2024.1  # Timezone support for astrology
 google-generativeai==0.8.3  # Gemini AI for astrology commentary
 
 # Data Processing
-astropy==6.0.0
-astroquery==0.4.7
+astropy>=5.3.0
+astroquery>=0.4.7
 
 # Database
 aiosqlite==0.19.0
