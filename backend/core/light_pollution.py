@@ -8,6 +8,14 @@ import numpy as np
 from typing import Optional, Tuple
 import logging
 
+# Rasterio imports (optional dependency)
+try:
+    import rasterio  # type: ignore
+    from rasterio.transform import rowcol  # type: ignore
+    HAS_RASTERIO = True
+except ImportError:
+    HAS_RASTERIO = False
+
 logger = logging.getLogger(__name__)
 
 # Global variables for lazy loading
@@ -26,9 +34,11 @@ def load_vnl_dataset():
     if _vnl_dataset is not None:
         return _vnl_dataset, _vnl_transform, _vnl_crs
     
+    if not HAS_RASTERIO:
+        logger.error("rasterio not installed. Install with: pip install rasterio")
+        return None, None, None
+    
     try:
-        import rasterio
-        
         # Path to VNL GeoTIFF
         vnl_path = os.path.join(
             os.path.dirname(__file__), 
@@ -73,8 +83,11 @@ def latlon_to_pixel(lat: float, lon: float, transform) -> Tuple[Optional[int], O
     Returns:
         (row, col) pixel coordinates
     """
+    if not HAS_RASTERIO:
+        logger.error("rasterio not installed")
+        return None, None
+    
     try:
-        from rasterio.transform import rowcol
         row, col = rowcol(transform, lon, lat)
         return int(row), int(col)
     except Exception as e:
