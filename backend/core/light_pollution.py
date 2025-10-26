@@ -3,6 +3,7 @@ NASA VIIRS Nighttime Lights (VNL) V2.2 Light Pollution Module
 High-precision light pollution assessment using satellite imagery
 """
 import os
+import math
 import numpy as np
 from typing import Optional, Tuple
 import logging
@@ -27,7 +28,6 @@ def load_vnl_dataset():
     
     try:
         import rasterio
-        from rasterio.transform import from_bounds
         
         # Path to VNL GeoTIFF
         vnl_path = os.path.join(
@@ -61,7 +61,7 @@ def load_vnl_dataset():
         return None, None, None
 
 
-def latlon_to_pixel(lat: float, lon: float, transform) -> Tuple[int, int]:
+def latlon_to_pixel(lat: float, lon: float, transform) -> Tuple[Optional[int], Optional[int]]:
     """
     Convert lat/lon to pixel coordinates using affine transform
     
@@ -195,8 +195,6 @@ def radiance_to_mpsas(radiance: float) -> float:
     Returns:
         Sky brightness in magnitudes per square arcsecond
     """
-    import math
-    
     # Avoid log(0)
     if radiance <= 0:
         return 22.0  # Darkest natural sky
