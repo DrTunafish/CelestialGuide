@@ -1,9 +1,9 @@
 # FastAPI and Server
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+fastapi==0.95.2
+uvicorn[standard]==0.20.0
 python-multipart==0.0.6
-pydantic==2.4.2
-pydantic-settings==2.0.3
+pydantic==1.10.12
+# pydantic-settings not needed for v1
 
 # Astronomical Calculations
 skyfield>=1.53
@@ -34,7 +34,7 @@ Pillow>=10.0.0,<11.0.0
 
 # PDF Generation
 reportlab==4.0.9
-weasyprint==60.2
+# weasyprint==60.2  # Commented out - causes issues on Render
 
 # HTTP Clients
 httpx==0.26.0
