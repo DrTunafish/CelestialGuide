@@ -9,15 +9,15 @@ pydantic==1.9.2
 skyfield>=1.53
 numpy>=1.24.0,<2.0.0
 pandas>=2.0.0
-pyswisseph==2.10.3.2  # Swiss Ephemeris for astrology calculations
+# pyswisseph==2.10.3.2  # Commented out - compilation issues
 pytz==2024.1  # Timezone support for astrology
 
 # AI & LLM
-google-generativeai==0.8.3  # Gemini AI for astrology commentary
+# google-generativeai==0.8.3  # Commented out - causes Python 3.13 issues
 
 # Data Processing
-astropy>=5.3.0
-astroquery>=0.4.7
+# astropy>=5.3.0  # Commented out - heavy dependency
+# astroquery>=0.4.7  # Commented out - heavy dependency
 
 # Database
 aiosqlite==0.19.0

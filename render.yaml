@@ -4,10 +4,11 @@ services:
     env: python
     rootDir: backend
     buildCommand: |
-      pip install --upgrade pip
-      pip install --only-binary=all -r requirements.txt
-      python setup_script.py
-    startCommand: python main.py
+      export PYTHON_VERSION=3.11.9
+      /opt/render/project/python/Python-3.11.9/bin/python3.11 -m pip install --upgrade pip
+      /opt/render/project/python/Python-3.11.9/bin/python3.11 -m pip install --only-binary=all -r requirements.txt
+      /opt/render/project/python/Python-3.11.9/bin/python3.11 setup_script.py
+    startCommand: /opt/render/project/python/Python-3.11.9/bin/python3.11 main.py
     plan: starter
     envVars:
       - key: PYTHON_VERSION
