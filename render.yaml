@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: celestialguide-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: OPENCAGE_API_KEY
+        sync: false
+      - key: OPENWEATHERMAP_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    disk:
+      name: celestial-data
+      mountPath: /opt/render/project/src/backend/data
+      sizeGB: 10
