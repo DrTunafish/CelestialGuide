@@ -16,7 +16,19 @@ import type {
   SolarEventsResponse,
 } from '../types';
 
-const API_BASE_URL = '/api';
+// Environment-based API URL configuration
+const getApiBaseUrl = (): string => {
+  // Check if there's an environment variable for API URL
+  const envApiUrl = import.meta.env.VITE_API_URL;
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
+  // Default to Cloudflare tunnel URL
+  return 'https://portal-richard-tribunal-accomplish.trycloudflare.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

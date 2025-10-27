@@ -35,7 +35,8 @@ allowed_origins = [
     "http://localhost:5173",
     "https://celestialguide.vercel.app",
     "https://celestialguide-pro.vercel.app",
-    "https://*.vercel.app"
+    "https://*.vercel.app",
+    "https://portal-richard-tribunal-accomplish.trycloudflare.com"
 ]
 
 # Add production origins from environment
