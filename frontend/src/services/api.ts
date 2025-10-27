@@ -16,8 +16,7 @@ import type {
   SolarEventsResponse,
 } from '../types';
 
-// API Base URL - Using Cloudflare tunnel for backend connection
-const API_BASE_URL = 'https://portal-richard-tribunal-accomplish.trycloudflare.com/api';
+const API_BASE_URL = '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
