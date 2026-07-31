@@ -23,12 +23,21 @@ venv/
 ENV/
 env/
 
-# Backend Data
-backend/data/
+# Backend Data (keep small seed files in git; exclude heavy/runtime artifacts)
+backend/data/**
+!backend/data/.gitkeep
+!backend/data/messier_ngc_catalog.json
+!backend/data/light_pollution/
+!backend/data/light_pollution/README.md
+backend/data/light_pollution/*.tif
+backend/data/light_pollution/*.tiff
+backend/data/*.db
+backend/data/*.sqlite
 backend/*.db
 backend/*.sqlite
 backend/*.bsp
 backend/raw/
+backend/static/
 
 # Environment
 .env

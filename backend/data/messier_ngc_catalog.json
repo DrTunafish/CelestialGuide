@@ -1,0 +1,177 @@
+{
+  "messier_objects": [
+    {
+      "id": "M31",
+      "name": "Andromeda Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 0.712,
+      "dec_degrees": 41.269,
+      "magnitude": 3.4,
+      "size_arcmin": 178.0,
+      "description": "Spiral galaxy in Andromeda"
+    },
+    {
+      "id": "M42",
+      "name": "Orion Nebula",
+      "type": "Nebula",
+      "ra_hours": 5.583,
+      "dec_degrees": -5.391,
+      "magnitude": 4.0,
+      "size_arcmin": 65.0,
+      "description": "Emission nebula in Orion"
+    },
+    {
+      "id": "M45",
+      "name": "Pleiades",
+      "type": "Open Cluster",
+      "ra_hours": 3.783,
+      "dec_degrees": 24.117,
+      "magnitude": 1.6,
+      "size_arcmin": 110.0,
+      "description": "Open star cluster in Taurus"
+    },
+    {
+      "id": "M13",
+      "name": "Hercules Cluster",
+      "type": "Globular Cluster",
+      "ra_hours": 16.695,
+      "dec_degrees": 36.460,
+      "magnitude": 5.8,
+      "size_arcmin": 20.0,
+      "description": "Globular cluster in Hercules"
+    },
+    {
+      "id": "M51",
+      "name": "Whirlpool Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 13.497,
+      "dec_degrees": 47.195,
+      "magnitude": 8.4,
+      "size_arcmin": 11.0,
+      "description": "Spiral galaxy in Canes Venatici"
+    },
+    {
+      "id": "M1",
+      "name": "Crab Nebula",
+      "type": "Supernova Remnant",
+      "ra_hours": 5.575,
+      "dec_degrees": 22.017,
+      "magnitude": 8.4,
+      "size_arcmin": 6.0,
+      "description": "Supernova remnant in Taurus"
+    },
+    {
+      "id": "M8",
+      "name": "Lagoon Nebula",
+      "type": "Nebula",
+      "ra_hours": 18.063,
+      "dec_degrees": -24.383,
+      "magnitude": 6.0,
+      "size_arcmin": 90.0,
+      "description": "Emission nebula in Sagittarius"
+    },
+    {
+      "id": "M16",
+      "name": "Eagle Nebula",
+      "type": "Nebula",
+      "ra_hours": 18.312,
+      "dec_degrees": -13.783,
+      "magnitude": 6.4,
+      "size_arcmin": 7.0,
+      "description": "Star-forming nebula in Serpens"
+    },
+    {
+      "id": "M20",
+      "name": "Trifid Nebula",
+      "type": "Nebula",
+      "ra_hours": 18.033,
+      "dec_degrees": -23.033,
+      "magnitude": 6.3,
+      "size_arcmin": 28.0,
+      "description": "Emission/reflection nebula in Sagittarius"
+    },
+    {
+      "id": "M27",
+      "name": "Dumbbell Nebula",
+      "type": "Planetary Nebula",
+      "ra_hours": 19.993,
+      "dec_degrees": 22.717,
+      "magnitude": 7.5,
+      "size_arcmin": 8.0,
+      "description": "Planetary nebula in Vulpecula"
+    },
+    {
+      "id": "M33",
+      "name": "Triangulum Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 1.564,
+      "dec_degrees": 30.660,
+      "magnitude": 5.7,
+      "size_arcmin": 73.0,
+      "description": "Spiral galaxy in Triangulum"
+    },
+    {
+      "id": "M57",
+      "name": "Ring Nebula",
+      "type": "Planetary Nebula",
+      "ra_hours": 18.893,
+      "dec_degrees": 33.029,
+      "magnitude": 8.8,
+      "size_arcmin": 1.4,
+      "description": "Planetary nebula in Lyra"
+    },
+    {
+      "id": "M81",
+      "name": "Bode's Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 9.927,
+      "dec_degrees": 69.065,
+      "magnitude": 6.9,
+      "size_arcmin": 27.0,
+      "description": "Spiral galaxy in Ursa Major"
+    },
+    {
+      "id": "M82",
+      "name": "Cigar Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 9.928,
+      "dec_degrees": 69.680,
+      "magnitude": 8.4,
+      "size_arcmin": 11.0,
+      "description": "Starburst galaxy in Ursa Major"
+    },
+    {
+      "id": "M104",
+      "name": "Sombrero Galaxy",
+      "type": "Galaxy",
+      "ra_hours": 12.666,
+      "dec_degrees": -11.623,
+      "magnitude": 8.0,
+      "size_arcmin": 9.0,
+      "description": "Spiral galaxy in Virgo"
+    }
+  ],
+  "planets": [
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "type": "Planet"
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "type": "Planet"
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "type": "Planet"
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "type": "Planet"
+    }
+  ]
+}
+
