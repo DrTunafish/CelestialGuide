@@ -5,9 +5,10 @@ import type { Location, SolarEventsResponse, DayEvents } from '../types';
 
 interface SolarEventsTabProps {
   location: Location | null;
+  selectedDate: string;
 }
 
-export default function SolarEventsTab({ location }: SolarEventsTabProps) {
+export default function SolarEventsTab({ location, selectedDate }: SolarEventsTabProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<SolarEventsResponse | null>(null);
@@ -17,7 +18,7 @@ export default function SolarEventsTab({ location }: SolarEventsTabProps) {
     if (location) {
       loadEvents();
     }
-  }, [location]);
+  }, [location, selectedDate]);
 
   const loadEvents = async () => {
     if (!location) return;
@@ -26,11 +27,10 @@ export default function SolarEventsTab({ location }: SolarEventsTabProps) {
     setError(null);
 
     try {
-      const today = new Date().toISOString().split('T')[0];
       const response = await calculateSolarEvents({
         latitude: location.latitude,
         longitude: location.longitude,
-        start_date: today,
+        start_date: selectedDate,
         days: days,
       });
       setEvents(response);
@@ -85,105 +85,119 @@ export default function SolarEventsTab({ location }: SolarEventsTabProps) {
     });
   };
 
-  const TimeDisplay = ({ label, time, icon: Icon, color, dateStr }: { 
-    label: string; 
-    time: string | null; 
-    icon: any; 
+  const TimeDisplay = ({
+    label,
+    time,
+    icon: Icon,
+    color,
+    dateStr,
+    boxClass = '',
+  }: {
+    label: string;
+    time: string | null;
+    icon: any;
     color: string;
     dateStr: string;
+    boxClass?: string;
   }) => {
     if (!time) return null;
-    
+
     const localTime = convertUTCToLocal(dateStr, time);
-    
+
     return (
-      <div className="flex items-center space-x-2">
-        <Icon size={16} className={color} />
-        <div>
-          <p className="text-xs text-gray-400">{label}</p>
-          <p className="text-sm font-semibold text-white">{localTime}</p>
+      <div className={`event-box ${boxClass}`.trim()}>
+        <div className="flex items-center space-x-2.5">
+          <Icon size={18} className={color} />
+          <div>
+            <p className="event-box__label">{label}</p>
+            <p className="event-box__value">{localTime}</p>
+          </div>
         </div>
       </div>
     );
   };
 
   const DayCard = ({ day }: { day: DayEvents }) => (
-    <div className="bg-space-900/30 border border-space-800 rounded-lg p-6 hover:border-space-600 transition-all">
+    <div className="card !p-5">
       {/* Date Header */}
-      <div className="mb-4 pb-3 border-b border-space-800">
-        <h3 className="text-lg font-bold text-space-400">
+      <div className="mb-4 pb-3 border-b border-[rgba(154,147,176,0.14)]">
+        <h3 className="text-lg font-bold title-sun">
           {formatDayName(day.date)}
         </h3>
-        <p className="text-xs text-gray-400">{day.date}</p>
+        <p className="text-xs text-ink-muted">{day.date}</p>
       </div>
 
       {/* Sun Events */}
       <div className="mb-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Sun className="text-yellow-400" size={20} />
-          <h4 className="font-semibold text-gray-300">Solar Events</h4>
+          <Sun className="text-sun" size={20} />
+          <h4 className="font-semibold title-sun">Solar Events</h4>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-3 mb-2">
-          <TimeDisplay 
-            label="Sunrise" 
-            time={day.sunrise} 
-            icon={Sunrise} 
-            color="text-orange-400" 
+          <TimeDisplay
+            label="Sunrise"
+            time={day.sunrise}
+            icon={Sunrise}
+            color="text-orange-400"
             dateStr={day.date}
+            boxClass="event-box--sunrise"
           />
-          <TimeDisplay 
-            label="Sunset" 
-            time={day.sunset} 
-            icon={Sunset} 
-            color="text-orange-600" 
+          <TimeDisplay
+            label="Sunset"
+            time={day.sunset}
+            icon={Sunset}
+            color="text-orange-500"
             dateStr={day.date}
+            boxClass="event-box--sunset"
           />
         </div>
 
         {day.day_length_hours && (
-          <div className="text-xs text-gray-400 mt-2">
+          <div className="text-xs text-ink-muted mt-2">
             Day length: {day.day_length_hours.toFixed(2)} hours
           </div>
         )}
       </div>
 
       {/* Golden & Blue Hours */}
-      <div className="mb-4 bg-gray-800/50 rounded-lg p-3">
-        <div className="grid grid-cols-1 gap-2 text-xs">
-          {day.golden_hour_morning_start && day.golden_hour_morning_end && (
-            <div className="flex items-center justify-between">
-              <span className="text-amber-400">🌅 Golden Hour (AM):</span>
-              <span className="text-gray-300">
-                {convertUTCToLocal(day.date, day.golden_hour_morning_start)} - {convertUTCToLocal(day.date, day.golden_hour_morning_end)}
-              </span>
-            </div>
-          )}
-          {day.golden_hour_evening_start && day.golden_hour_evening_end && (
-            <div className="flex items-center justify-between">
-              <span className="text-amber-400">🌇 Golden Hour (PM):</span>
-              <span className="text-gray-300">
-                {convertUTCToLocal(day.date, day.golden_hour_evening_start)} - {convertUTCToLocal(day.date, day.golden_hour_evening_end)}
-              </span>
-            </div>
-          )}
-          {day.blue_hour_morning_start && day.blue_hour_morning_end && (
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400">🌌 Blue Hour (AM):</span>
-              <span className="text-gray-300">
-                {convertUTCToLocal(day.date, day.blue_hour_morning_start)} - {convertUTCToLocal(day.date, day.blue_hour_morning_end)}
-              </span>
-            </div>
-          )}
-          {day.blue_hour_evening_start && day.blue_hour_evening_end && (
-            <div className="flex items-center justify-between">
-              <span className="text-blue-400">🌆 Blue Hour (PM):</span>
-              <span className="text-gray-300">
-                {convertUTCToLocal(day.date, day.blue_hour_evening_start)} - {convertUTCToLocal(day.date, day.blue_hour_evening_end)}
-              </span>
-            </div>
-          )}
-        </div>
+      <div className="mb-4 grid grid-cols-1 gap-2.5">
+        {day.golden_hour_morning_start && day.golden_hour_morning_end && (
+          <div className="event-box event-box--golden">
+            <p className="event-box__label text-sun">Golden Hour (AM)</p>
+            <p className="event-box__value">
+              {convertUTCToLocal(day.date, day.golden_hour_morning_start)} –{' '}
+              {convertUTCToLocal(day.date, day.golden_hour_morning_end)}
+            </p>
+          </div>
+        )}
+        {day.golden_hour_evening_start && day.golden_hour_evening_end && (
+          <div className="event-box event-box--golden">
+            <p className="event-box__label text-sun">Golden Hour (PM)</p>
+            <p className="event-box__value">
+              {convertUTCToLocal(day.date, day.golden_hour_evening_start)} –{' '}
+              {convertUTCToLocal(day.date, day.golden_hour_evening_end)}
+            </p>
+          </div>
+        )}
+        {day.blue_hour_morning_start && day.blue_hour_morning_end && (
+          <div className="event-box event-box--blue">
+            <p className="event-box__label text-blue-300">Blue Hour (AM)</p>
+            <p className="event-box__value">
+              {convertUTCToLocal(day.date, day.blue_hour_morning_start)} –{' '}
+              {convertUTCToLocal(day.date, day.blue_hour_morning_end)}
+            </p>
+          </div>
+        )}
+        {day.blue_hour_evening_start && day.blue_hour_evening_end && (
+          <div className="event-box event-box--blue">
+            <p className="event-box__label text-blue-300">Blue Hour (PM)</p>
+            <p className="event-box__value">
+              {convertUTCToLocal(day.date, day.blue_hour_evening_start)} –{' '}
+              {convertUTCToLocal(day.date, day.blue_hour_evening_end)}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Twilight Times */}
@@ -257,8 +271,8 @@ export default function SolarEventsTab({ location }: SolarEventsTabProps) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-          <CloudSun className="text-space-500" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2 title-sun">
+          <CloudSun className="text-sun" />
           <span>Solar & Lunar Events</span>
         </h2>
 
@@ -288,7 +302,7 @@ export default function SolarEventsTab({ location }: SolarEventsTabProps) {
           <button
             onClick={loadEvents}
             disabled={loading || !location}
-            className="btn-primary mt-6 flex items-center space-x-2"
+            className="btn-core btn-primary mt-6 flex items-center space-x-2"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />

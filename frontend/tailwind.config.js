@@ -7,94 +7,166 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Deep Space Theme Colors
-        'cosmic': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#00C4FF', // Neon Blue
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#0A0A0E', // Deep Space Black
+        night: {
+          DEFAULT: '#050507',
+          secondary: '#0A0910',
+          card: '#12111A',
+          raised: '#1A1826',
+          glass: 'rgba(18, 17, 26, 0.78)',
         },
-        'stellar': {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
-          300: '#fde047',
-          400: '#facc15',
-          500: '#FFD700', // Gold
-          600: '#ca8a04',
-          700: '#a16207',
-          800: '#854d0e',
-          900: '#713f12',
-          950: '#422006',
+        violet: {
+          DEFAULT: '#9B87F5',
+          soft: '#C4B5FD',
+          deep: '#7C6AD8',
+          muted: '#6E63A8',
+          glow: 'rgba(155, 135, 245, 0.28)',
         },
-        'nebula': {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
-          950: '#3b0764',
+        ink: {
+          title: '#F2F0FA',
+          body: '#D8D4E8',
+          muted: '#9A93B0',
+          faint: '#6B657A',
         },
-        'space': {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        }
+        aurora: {
+          teal: '#7DD3C0',
+          soft: '#9EE4D4',
+        },
+        gold: {
+          celestial: '#D4B87A',
+          soft: '#E8D5A8',
+          deep: '#B8954A',
+        },
+        sun: {
+          DEFAULT: '#F5C542',
+          soft: '#FFE08A',
+          deep: '#E0A820',
+        },
+        alert: {
+          danger: '#E88A9A',
+          dangerSoft: '#F0A8B4',
+        },
+        // Legacy aliases remapped to violet night theme
+        cyan: {
+          astro: '#9B87F5',
+          soft: '#C4B5FD',
+          deep: '#7C6AD8',
+        },
+        soft: {
+          blue: '#A99BE8',
+        },
+        cosmic: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#9B87F5',
+          600: '#7C6AD8',
+          700: '#5B4FA6',
+          800: '#1A1826',
+          900: '#0A0910',
+          950: '#050507',
+        },
+        stellar: {
+          50: '#faf6eb',
+          100: '#f3ebd4',
+          200: '#e8d5a8',
+          300: '#D4B87A',
+          400: '#C4A86A',
+          500: '#B8954A',
+          600: '#9a7a3a',
+          700: '#7a6030',
+          800: '#5a4624',
+          900: '#3a2e18',
+          950: '#1a140c',
+        },
+        space: {
+          50: '#f8f7fc',
+          100: '#eeecf5',
+          200: '#d8d4e8',
+          300: '#b8b2cc',
+          400: '#9A93B0',
+          500: '#6B657A',
+          600: '#4A4558',
+          700: '#1A1826',
+          800: '#12111A',
+          900: '#0A0910',
+          950: '#050507',
+        },
+        nebula: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#9B87F5',
+          600: '#7C6AD8',
+          700: '#5B4FA6',
+          800: '#3d3570',
+          900: '#2a2450',
+          950: '#151228',
+          violet: '#9B87F5',
+        },
       },
       backgroundImage: {
-        'stars': "radial-gradient(circle at 20% 50%, rgba(0, 196, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%), radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%)",
-        'galaxy': "linear-gradient(135deg, #0A0A0E 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0A0A0E 100%)",
-        'nebula': "radial-gradient(ellipse at center, rgba(168, 85, 247, 0.2) 0%, rgba(0, 196, 255, 0.1) 50%, transparent 100%)",
+        'night-depth': 'linear-gradient(180deg, #050507 0%, #0A0910 50%, #050507 100%)',
+        'btn-primary': 'linear-gradient(135deg, #7C6AD8 0%, #9B87F5 100%)',
+        'btn-gold': 'linear-gradient(135deg, #D4B87A 0%, #B8954A 100%)',
+        'title-gradient': 'linear-gradient(90deg, #F2F0FA 0%, #C4B5FD 55%, #9B87F5 100%)',
       },
       fontFamily: {
-        'orbitron': ['Orbitron', 'monospace'],
-        'inter': ['Inter', 'sans-serif'],
+        sans: ['"Outfit"', '"Rajdhani"', 'system-ui', 'sans-serif'],
+        display: ['"Outfit"', '"Rajdhani"', 'system-ui', 'sans-serif'],
+        mono: ['"Space Mono"', 'ui-monospace', 'monospace'],
+        orbitron: ['Orbitron', 'monospace'],
+        rajdhani: ['"Rajdhani"', 'sans-serif'],
+        spaceMono: ['"Space Mono"', 'monospace'],
+      },
+      boxShadow: {
+        card: '0 18px 50px rgba(0, 0, 0, 0.45)',
+        'card-inset': 'inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+        glow: '0 0 24px rgba(155, 135, 245, 0.22)',
+        'glow-strong': '0 0 34px rgba(155, 135, 245, 0.34)',
+        'title-glow': '0 0 24px rgba(155, 135, 245, 0.08)',
+        focus: '0 0 0 3px rgba(155, 135, 245, 0.12)',
+      },
+      borderRadius: {
+        card: '1.1rem',
+        control: '0.85rem',
+      },
+      transitionTimingFunction: {
+        celestial: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
       animation: {
-        'star-twinkle': 'twinkle 2s ease-in-out infinite alternate',
-        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-        'float': 'float 6s ease-in-out infinite',
+        'star-twinkle': 'twinkle 4s ease-in-out infinite',
+        'nebula-drift': 'nebula-drift 48s ease-in-out infinite',
+        'orbital-spin': 'orbital-spin 12s linear infinite',
+        'constellation': 'constellation 1.6s ease-out infinite',
+        'fade-rise': 'fade-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both',
       },
       keyframes: {
         twinkle: {
-          '0%': { opacity: '0.3' },
-          '100%': { opacity: '1' },
+          '0%, 100%': { opacity: '0.25' },
+          '50%': { opacity: '0.85' },
         },
-        'pulse-glow': {
-          '0%, 100%': { 
-            boxShadow: '0 0 5px rgba(0, 196, 255, 0.5), 0 0 10px rgba(0, 196, 255, 0.3), 0 0 15px rgba(0, 196, 255, 0.1)' 
-          },
-          '50%': { 
-            boxShadow: '0 0 10px rgba(0, 196, 255, 0.8), 0 0 20px rgba(0, 196, 255, 0.5), 0 0 30px rgba(0, 196, 255, 0.2)' 
-          },
+        'nebula-drift': {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0) scale(1)', opacity: '0.7' },
+          '50%': { transform: 'translate3d(2%, -1.5%, 0) scale(1.05)', opacity: '1' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        }
-      }
+        'orbital-spin': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        constellation: {
+          '0%, 100%': { opacity: '0.2' },
+          '50%': { opacity: '1' },
+        },
+        'fade-rise': {
+          '0%': { opacity: '0', transform: 'translateY(24px)', filter: 'blur(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
+        },
+      },
     },
   },
   plugins: [],
 }
-

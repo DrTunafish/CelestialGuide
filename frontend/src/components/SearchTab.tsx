@@ -54,8 +54,8 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
   return (
     <div className="max-w-4xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-          <Star className="text-space-500" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2 title-sun">
+          <Star className="text-sun" />
           <span>Star Search</span>
         </h2>
 
@@ -76,7 +76,7 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
             <button
               onClick={handleSearch}
               disabled={loading || !location}
-              className="btn-primary px-6 flex items-center space-x-2"
+              className="btn-core btn-primary px-6 flex items-center space-x-2"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />

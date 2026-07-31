@@ -1,9 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Stars, Loader2, Calendar, MapPin, Sparkles } from 'lucide-react';
-import { calculateNatalChart, getHouseSystems, geocodeLocation, getDeepCommentary } from '../services/api';
+import {
+  Stars,
+  Calendar,
+  MapPin,
+  Sparkles,
+  Clock3,
+  Navigation,
+  Globe2,
+  SatelliteDish,
+} from 'lucide-react';
+import {
+  calculateNatalChart,
+  getHouseSystems,
+  geocodeLocation,
+  getDeepCommentary,
+} from '../services/api';
 import type { Location, NatalChart, AICommentaryResponse } from '../types';
 import BirthChartVisualization from './BirthChartVisualization';
-import ReactMarkdown from 'react-markdown';
+import GeminiDataStream from './GeminiDataStream';
 
 interface AstrologyTabProps {
   location: Location | null;
@@ -18,16 +32,17 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
   const [timezone, setTimezone] = useState('Europe/Istanbul');
   const [houseSystem, setHouseSystem] = useState('Placidus');
   const [houseSystems, setHouseSystems] = useState<string[]>([]);
-  
+
   const [loading, setLoading] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [loadingCommentary, setLoadingCommentary] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chart, setChart] = useState<NatalChart | null>(null);
   const [commentary, setCommentary] = useState<AICommentaryResponse | null>(null);
+  const [activeField, setActiveField] = useState<string>('Idle');
+  const [terminalStatus, setTerminalStatus] = useState<string>('Standby');
 
   useEffect(() => {
-    // Load house systems
     const loadSystems = async () => {
       try {
         const data = await getHouseSystems();
@@ -40,21 +55,36 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
     loadSystems();
   }, []);
 
+  const assignLocationDefaults = () => {
+    if (!location) return;
+    if (!birthCity) setBirthCity(`${location.city || ''}`);
+    if (!birthLat) setBirthLat(location.latitude.toFixed(6));
+    if (!birthLon) setBirthLon(location.longitude.toFixed(6));
+  };
+
+  useEffect(() => {
+    assignLocationDefaults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
+
   const handleGeocodeBirthPlace = async () => {
     if (!birthCity) {
-      setError('Please enter a birth city');
+      setError('Please enter a birth city before scanning coordinates.');
       return;
     }
 
     setLoadingLocation(true);
     setError(null);
+    setTerminalStatus('Triangulating coordinates...');
 
     try {
       const locationData = await geocodeLocation(birthCity, '');
       setBirthLat(locationData.latitude.toFixed(6));
       setBirthLon(locationData.longitude.toFixed(6));
+      setTerminalStatus('Coordinates locked.');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to geocode birth place');
+      setError(err.response?.data?.detail || 'Failed to geocode birth place.');
+      setTerminalStatus('Coordinate acquisition failed.');
     } finally {
       setLoadingLocation(false);
     }
@@ -62,19 +92,19 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
 
   const handleCalculate = async () => {
     if (!birthDate || !birthTime) {
-      setError('Please enter birth date and time');
+      setError('Please enter both birth date and birth time.');
       return;
     }
 
     setLoading(true);
     setError(null);
-    setCommentary(null); // Clear previous commentary
+    setCommentary(null);
+    setTerminalStatus('Computing chart geometry...');
 
     try {
       let lat = birthLat;
       let lon = birthLon;
 
-      // If coordinates are missing but city is provided, geocode automatically
       if ((!lat || !lon) && birthCity) {
         try {
           const locationData = await geocodeLocation(birthCity, '');
@@ -83,20 +113,22 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
           setBirthLat(lat);
           setBirthLon(lon);
         } catch (geocodeErr: any) {
-          setError(geocodeErr.response?.data?.detail || `Failed to find location: ${birthCity}`);
+          setError(geocodeErr.response?.data?.detail || `Failed to resolve coordinates for ${birthCity}.`);
           setLoading(false);
+          setTerminalStatus('Coordinate acquisition failed.');
           return;
         }
       }
 
       if (!lat || !lon) {
-        setError('Please provide birth location (city name or coordinates)');
+        setError('Please provide birth coordinates or a valid city.');
         setLoading(false);
+        setTerminalStatus('Awaiting complete parameters.');
         return;
       }
 
       const datetime = `${birthDate} ${birthTime}:00`;
-      
+
       const chartData = await calculateNatalChart({
         datetime,
         lat: parseFloat(lat),
@@ -106,8 +138,10 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
       });
 
       setChart(chartData);
+      setTerminalStatus('Chart synchronized.');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to calculate chart');
+      setError(err.response?.data?.detail || 'Failed to calculate the natal chart.');
+      setTerminalStatus('Chart computation failed.');
     } finally {
       setLoading(false);
     }
@@ -115,18 +149,18 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
 
   const handleGenerateCommentary = async () => {
     if (!birthDate || !birthTime) {
-      setError('Please enter birth date and time');
+      setError('Please enter both birth date and birth time.');
       return;
     }
 
     setLoadingCommentary(true);
     setError(null);
+    setTerminalStatus('Engaging Gemini intelligence...');
 
     try {
       let lat = birthLat;
       let lon = birthLon;
 
-      // If coordinates are missing but city is provided, geocode automatically
       if ((!lat || !lon) && birthCity) {
         try {
           const locationData = await geocodeLocation(birthCity, '');
@@ -135,20 +169,22 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
           setBirthLat(lat);
           setBirthLon(lon);
         } catch (geocodeErr: any) {
-          setError(geocodeErr.response?.data?.detail || `Failed to find location: ${birthCity}`);
+          setError(geocodeErr.response?.data?.detail || `Failed to resolve coordinates for ${birthCity}.`);
           setLoadingCommentary(false);
+          setTerminalStatus('Gemini aborted: missing coordinates.');
           return;
         }
       }
 
       if (!lat || !lon) {
-        setError('Please provide birth location (city name or coordinates)');
+        setError('Please provide birth coordinates or a valid city.');
         setLoadingCommentary(false);
+        setTerminalStatus('Gemini aborted: incomplete parameters.');
         return;
       }
 
       const datetime = `${birthDate} ${birthTime}:00`;
-      
+
       const commentaryData = await getDeepCommentary({
         datetime,
         lat: parseFloat(lat),
@@ -158,308 +194,297 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
       });
 
       setCommentary(commentaryData);
-      setChart(commentaryData.chart_data); // Also update chart
+      setChart(commentaryData.chart_data);
+      setTerminalStatus('Gemini analysis ready.');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to generate commentary. Please check if GEMINI_API_KEY is configured.');
+      setError(
+        err.response?.data?.detail || 'Failed to generate Gemini commentary. Ensure GEMINI_API_KEY is configured.',
+      );
+      setTerminalStatus('Gemini analysis failed.');
     } finally {
       setLoadingCommentary(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-          <Stars className="text-nebula-500" />
-          <span>Birth Chart Calculator</span>
-        </h2>
-
-        {/* Birth Information Form */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Date and Time */}
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              <Calendar className="inline w-4 h-4 mr-1" />
-              Birth Date
-            </label>
-            <input
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="input w-full"
-            />
+    <div className="space-y-8">
+      <section className="panel">
+        <div className="panel__header">
+          <div className="flex items-center gap-4">
+            <div className="icon-orb">
+              <Stars size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold title-sun">Natal Chart</h2>
+              <p className="text-xs tracking-[0.08em] text-ink-muted mt-1">
+                Enter birth details to calculate your chart
+              </p>
+            </div>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Birth Time
-            </label>
-            <input
-              type="time"
-              value={birthTime}
-              onChange={(e) => setBirthTime(e.target.value)}
-              className="input w-full"
-            />
+          <div className="text-xs tracking-[0.08em] text-ink-faint">
+            Active field: <span className="text-violet-soft">{activeField}</span>
+            <span className="ml-6 text-ink-faint">Status: {terminalStatus}</span>
           </div>
+        </div>
 
-          {/* Birth Place */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              <MapPin className="inline w-4 h-4 mr-1" />
-              Birth Place (City) *
-            </label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={birthCity}
-                onChange={(e) => setBirthCity(e.target.value)}
-                placeholder="e.g., Istanbul, Paris, New York"
-                className="input flex-1"
-                onKeyPress={(e) => e.key === 'Enter' && handleGeocodeBirthPlace()}
-              />
+        <div className="panel__body relative overflow-hidden">
+          <div className="space-y-8">
+            <div className="terminal-grid">
+              <div>
+                <label className="hud-label">
+                  <Calendar size={14} /> Birth date
+                </label>
+                <input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  onFocus={() => setActiveField('Birth date')}
+                  className="holo-input"
+                />
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <Clock3 size={14} /> Birth time
+                </label>
+                <input
+                  type="time"
+                  value={birthTime}
+                  onChange={(e) => setBirthTime(e.target.value)}
+                  onFocus={() => setActiveField('Birth time')}
+                  className="holo-input"
+                />
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <MapPin size={14} /> Birth city
+                </label>
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 md:flex-row">
+                    <input
+                      type="text"
+                      value={birthCity}
+                      onChange={(e) => setBirthCity(e.target.value)}
+                      onFocus={() => setActiveField('Birth city')}
+                      placeholder="Istanbul, Paris, New York"
+                      className="holo-input flex-1"
+                      onKeyDown={(e) => e.key === 'Enter' && handleGeocodeBirthPlace()}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleGeocodeBirthPlace}
+                      disabled={loadingLocation}
+                      className="btn-core btn-secondary min-w-[12rem]"
+                    >
+                      {loadingLocation ? (
+                        <span className="flex items-center gap-3">
+                          <span className="scan-loader"><span className="scan-loader__beam" /></span>
+                          <span>Scanning...</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Navigation size={16} /> Acquire coordinates
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-[0.7rem] tracking-[0.06em] text-ink-faint">
+                    Coordinates auto-populate from your observation location when available.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <Navigation size={14} /> Latitude
+                </label>
+                <input
+                  type="number"
+                  value={birthLat}
+                  onChange={(e) => setBirthLat(e.target.value)}
+                  onFocus={() => setActiveField('Latitude')}
+                  step="0.000001"
+                  placeholder="Auto-filled from city"
+                  className="holo-input"
+                />
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <Navigation size={14} /> Longitude
+                </label>
+                <input
+                  type="number"
+                  value={birthLon}
+                  onChange={(e) => setBirthLon(e.target.value)}
+                  onFocus={() => setActiveField('Longitude')}
+                  step="0.000001"
+                  placeholder="Auto-filled from city"
+                  className="holo-input"
+                />
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <Globe2 size={14} /> Timezone (IANA)
+                </label>
+                <input
+                  type="text"
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                  onFocus={() => setActiveField('Timezone')}
+                  placeholder="Europe/Istanbul"
+                  className="holo-input"
+                />
+              </div>
+
+              <div>
+                <label className="hud-label">
+                  <SatelliteDish size={14} /> House system
+                </label>
+                <select
+                  value={houseSystem}
+                  onChange={(e) => setHouseSystem(e.target.value)}
+                  onFocus={() => setActiveField('House system')}
+                  className="holo-input"
+                >
+                  {houseSystems.map((system) => (
+                    <option key={system} value={system} className="bg-slate-900">
+                      {system}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="hud-divider" />
+
+            <div className="terminal-actions">
               <button
-                onClick={handleGeocodeBirthPlace}
-                disabled={loadingLocation}
-                className="btn-secondary flex items-center space-x-2"
-                title="Find coordinates for this city"
+                type="button"
+                onClick={handleCalculate}
+                disabled={loading || loadingCommentary}
+                className="btn-core btn-primary"
               >
-                {loadingLocation ? (
-                  <Loader2 className="animate-spin" size={20} />
+                {loading ? (
+                  <span className="flex items-center gap-3">
+                    <span className="scan-loader"><span className="scan-loader__beam" /></span>
+                    <span>Calculating chart</span>
+                  </span>
                 ) : (
-                  <MapPin size={20} />
+                  <span className="flex items-center gap-2">
+                    <Stars size={18} /> Calculate chart
+                  </span>
                 )}
-                <span>Find</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGenerateCommentary}
+                disabled={loading || loadingCommentary}
+                className="btn-core btn-amber"
+              >
+                {loadingCommentary ? (
+                  <span className="flex items-center gap-3">
+                    <span className="scan-loader"><span className="scan-loader__beam" /></span>
+                    <span>Gemini analyzing</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={18} /> Star Reading
+                  </span>
+                )}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Will be automatically geocoded when calculating (or click Find to see coordinates)
-            </p>
-          </div>
-
-          {/* Coordinates */}
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Latitude (Optional)
-            </label>
-            <input
-              type="number"
-              value={birthLat}
-              onChange={(e) => setBirthLat(e.target.value)}
-              step="0.000001"
-              placeholder="Auto-filled from city"
-              className="input w-full"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Longitude (Optional)
-            </label>
-            <input
-              type="number"
-              value={birthLon}
-              onChange={(e) => setBirthLon(e.target.value)}
-              step="0.000001"
-              placeholder="Auto-filled from city"
-              className="input w-full"
-            />
-          </div>
-
-          {/* Timezone */}
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Timezone (IANA)
-            </label>
-            <input
-              type="text"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              placeholder="e.g., Europe/Istanbul, America/New_York"
-              className="input w-full"
-            />
-          </div>
-
-          {/* House System */}
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              House System
-            </label>
-            <select
-              value={houseSystem}
-              onChange={(e) => setHouseSystem(e.target.value)}
-              className="input w-full"
-            >
-              {houseSystems.map((system) => (
-                <option key={system} value={system}>
-                  {system}
-                </option>
-              ))}
-            </select>
           </div>
         </div>
+      </section>
 
-        {/* Calculate Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <button
-            onClick={handleCalculate}
-            disabled={loading || loadingCommentary}
-            className="btn-primary flex items-center justify-center space-x-2"
-          >
-            {loading ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              <Stars size={20} />
-            )}
-            <span>Calculate Birth Chart</span>
-          </button>
-          
-          <button
-            onClick={handleGenerateCommentary}
-            disabled={loading || loadingCommentary}
-            className="btn-secondary flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-nebula-600 hover:from-purple-700 hover:to-nebula-700"
-          >
-            {loadingCommentary ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              <Sparkles size={20} />
-            )}
-            <span>AI Deep Analysis (Gemini)</span>
-          </button>
+      {error && (
+        <div className="alert-panel">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-200">System alert</p>
+          <p className="mt-2 text-sm text-red-100/90">{error}</p>
         </div>
+      )}
 
-        {/* Error Display */}
-        {error && (
-          <div className="mb-6 bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
+      <GeminiDataStream commentary={commentary} isLoading={loadingCommentary} />
 
-        {/* AI Commentary Display */}
-        {commentary && (
-          <div className="mb-6">
-            <div className="bg-gradient-to-br from-purple-900/30 to-nebula-900/30 border-2 border-purple-700 rounded-lg p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Sparkles className="text-purple-400" size={24} />
-                <h3 className="text-xl font-bold text-purple-300">
-                  Derin Astrolojik Yorum (Gemini AI)
-                </h3>
-              </div>
-              <div className="prose prose-invert prose-purple max-w-none">
-                <div className="text-gray-300 leading-relaxed space-y-4">
-                  <ReactMarkdown>{commentary.commentary_text}</ReactMarkdown>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-purple-800 text-sm text-gray-400 flex items-center justify-between">
-                <span>Model: {commentary.model}</span>
-                <span>{commentary.sections.length} bölüm</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Chart Display */}
-        {chart && (
-          <div className="space-y-6">
-            {/* Birth Chart Visualization */}
-            <BirthChartVisualization chart={chart} />
-
-            {/* Key Points */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-nebula-900/20 border border-nebula-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-2 text-nebula-400">
-                  Rising Sign (Ascendant)
-                </h3>
-                <p className="text-2xl font-bold text-white">
-                  {chart.ascendant_formatted}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Your outer personality and how others see you
-                </p>
-              </div>
-
-              <div className="bg-space-900/20 border border-space-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-2 text-space-400">
-                  Midheaven (MC)
-                </h3>
-                <p className="text-2xl font-bold text-white">
-                  {chart.midheaven_formatted}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Your career path and public image
-                </p>
-              </div>
-            </div>
-
-            {/* Planet Positions Table */}
-            <div className="bg-gray-800 rounded-lg overflow-hidden">
-              <h3 className="text-lg font-semibold p-4 bg-gray-900 text-gray-300">
-                Planet Positions
+      {chart && (
+        <section className="space-y-8">
+          <div className="chart-shell">
+            <div className="chart-shell__header">
+              <h3 className="text-lg font-semibold tracking-[0.08em] title-sun">
+                BIRTH CHART
               </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-900 text-gray-400 text-sm">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Planet</th>
-                      <th className="px-4 py-2 text-left">Position</th>
-                      <th className="px-4 py-2 text-left">House</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-white">
-                    {chart.planet_positions.map((planet, idx) => (
-                      <tr
-                        key={planet.name}
-                        className={idx % 2 === 0 ? 'bg-gray-800' : 'bg-gray-850'}
-                      >
-                        <td className="px-4 py-2 font-medium">{planet.name}</td>
-                        <td className="px-4 py-2">{planet.formatted}</td>
-                        <td className="px-4 py-2">House {planet.house}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
-
-            {/* Aspects */}
-            {chart.aspects.length > 0 && (
-              <div className="bg-gray-800 rounded-lg overflow-hidden">
-                <h3 className="text-lg font-semibold p-4 bg-gray-900 text-gray-300">
-                  Major Aspects
-                </h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-900 text-gray-400 text-sm">
-                      <tr>
-                        <th className="px-4 py-2 text-left">Planets</th>
-                        <th className="px-4 py-2 text-left">Aspect</th>
-                        <th className="px-4 py-2 text-left">Orb</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-white">
-                      {chart.aspects.map((aspect, idx) => (
-                        <tr
-                          key={idx}
-                          className={idx % 2 === 0 ? 'bg-gray-800' : 'bg-gray-850'}
-                        >
-                          <td className="px-4 py-2">
-                            {aspect.planet1} - {aspect.planet2}
-                          </td>
-                          <td className="px-4 py-2 font-medium text-nebula-400">
-                            {aspect.type}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-400">
-                            {aspect.orb}°
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+            <BirthChartVisualization chart={chart} />
           </div>
-        )}
-      </div>
+
+          <div className="chart-callout md:grid-cols-2">
+            <article className="chart-callout__card">
+              <h4 className="text-sm uppercase tracking-[0.12em] text-violet-soft">Ascendant</h4>
+              <p className="mt-2 text-2xl font-semibold text-ink-title">{chart.ascendant_formatted}</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                Primary interface with the external world and immediate response pattern.
+              </p>
+            </article>
+            <article className="chart-callout__card">
+              <h4 className="text-sm uppercase tracking-[0.12em] text-violet-soft">Midheaven</h4>
+              <p className="mt-2 text-2xl font-semibold text-ink-title">{chart.midheaven_formatted}</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                Professional trajectory, public presence, and legacy orientation.
+              </p>
+            </article>
+          </div>
+
+          <div className="table-scroll">
+            <table className="chart-table">
+              <thead>
+                <tr>
+                  <th>Planet</th>
+                  <th>Position</th>
+                  <th>House</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chart.planet_positions.map((planet) => (
+                  <tr key={planet.name}>
+                    <td className="font-semibold uppercase tracking-[0.18em]">{planet.name}</td>
+                    <td>{planet.formatted}</td>
+                    <td>House {planet.house}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {chart.aspects.length > 0 && (
+            <div className="table-scroll">
+              <table className="chart-table">
+                <thead>
+                  <tr>
+                    <th>Aspect pair</th>
+                    <th>Aspect</th>
+                    <th>Orb</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chart.aspects.map((aspect, idx) => (
+                    <tr key={`${aspect.planet1}-${aspect.planet2}-${idx}`}>
+                      <td>
+                        {aspect.planet1} · {aspect.planet2}
+                      </td>
+                      <td className="font-semibold text-violet-soft">{aspect.type}</td>
+                      <td className="text-sm text-ink-muted">{aspect.orb}°</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

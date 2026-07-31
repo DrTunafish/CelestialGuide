@@ -32,9 +32,9 @@ export const geocodeLocation = async (city: string, country?: string): Promise<L
   return response.data;
 };
 
-export const getWeather = async (latitude: number, longitude: number) => {
+export const getWeather = async (latitude: number, longitude: number, date?: string) => {
   const response = await api.get('/environment/weather', {
-    params: { latitude, longitude },
+    params: { latitude, longitude, date },
   });
   return response.data;
 };
@@ -49,10 +49,11 @@ export const getLightPollution = async (latitude: number, longitude: number) => 
 export const getCompleteEnvironmentalData = async (
   latitude: number,
   longitude: number,
-  city?: string
+  city?: string,
+  date?: string
 ): Promise<EnvironmentalData> => {
   const response = await api.get('/environment/complete', {
-    params: { latitude, longitude, city },
+    params: { latitude, longitude, city, date },
   });
   return response.data;
 };

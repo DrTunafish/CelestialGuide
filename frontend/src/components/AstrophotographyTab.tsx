@@ -6,11 +6,11 @@ import type { Location, AstrophotographyResponse, DeepSkyTarget } from '../types
 
 interface AstrophotographyTabProps {
   location: Location | null;
+  selectedDate: string;
 }
 
-export default function AstrophotographyTab({ location }: AstrophotographyTabProps) {
+export default function AstrophotographyTab({ location, selectedDate }: AstrophotographyTabProps) {
   const [target, setTarget] = useState('');
-  const [date, setDate] = useState('');
   const [minAltitude, setMinAltitude] = useState(30);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,10 +19,6 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
   const [showTargetList, setShowTargetList] = useState(false);
 
   useEffect(() => {
-    // Set default date to today
-    const today = new Date().toISOString().split('T')[0];
-    setDate(today);
-
     // Load available targets
     loadTargets();
   }, []);
@@ -47,11 +43,6 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
       return;
     }
 
-    if (!date) {
-      setError('Please select a date');
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -60,7 +51,7 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
         target: target.trim(),
         latitude: location.latitude,
         longitude: location.longitude,
-        date: date,
+        date: selectedDate,
         min_altitude: minAltitude,
       });
       setResult(response);
@@ -114,8 +105,8 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
   return (
     <div className="max-w-7xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-          <Camera className="text-space-500" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2 title-sun">
+          <Camera className="text-sun" />
           <span>Astrophotography Assistant</span>
         </h2>
 
@@ -159,17 +150,17 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
             )}
           </div>
 
-          {/* Date */}
+          {/* Date Info */}
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">
               Observation Date
             </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input w-full"
-            />
+            <div className="input w-full bg-gray-700/50 text-gray-400 flex items-center">
+              {selectedDate}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Date set in Location tab
+            </p>
           </div>
 
           {/* Min Altitude */}
@@ -192,7 +183,7 @@ export default function AstrophotographyTab({ location }: AstrophotographyTabPro
         <button
           onClick={handleCalculate}
           disabled={loading}
-          className="btn-primary w-full flex items-center justify-center space-x-2 mb-6"
+          className="btn-core btn-primary w-full flex items-center justify-center space-x-2 mb-6"
         >
           {loading ? (
             <Loader2 className="animate-spin" size={20} />

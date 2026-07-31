@@ -6,49 +6,77 @@ interface BirthChartVisualizationProps {
   chart: NatalChart;
 }
 
-// Zodiac symbols
 const ZODIAC_SYMBOLS: { [key: string]: string } = {
-  'Aries': '♈',
-  'Taurus': '♉',
-  'Gemini': '♊',
-  'Cancer': '♋',
-  'Leo': '♌',
-  'Virgo': '♍',
-  'Libra': '♎',
-  'Scorpio': '♏',
-  'Sagittarius': '♐',
-  'Capricornus': '♑',
-  'Capricorn': '♑',
-  'Aquarius': '♒',
-  'Pisces': '♓',
+  Aries: '♈',
+  Taurus: '♉',
+  Gemini: '♊',
+  Cancer: '♋',
+  Leo: '♌',
+  Virgo: '♍',
+  Libra: '♎',
+  Scorpio: '♏',
+  Sagittarius: '♐',
+  Capricornus: '♑',
+  Capricorn: '♑',
+  Aquarius: '♒',
+  Pisces: '♓',
 };
 
-// Planet symbols
 const PLANET_SYMBOLS: { [key: string]: string } = {
-  'Sun': '☉',
-  'Moon': '☽',
-  'Mercury': '☿',
-  'Venus': '♀',
-  'Mars': '♂',
-  'Jupiter': '♃',
-  'Saturn': '♄',
-  'Uranus': '♅',
-  'Neptune': '♆',
-  'Pluto': '♇',
+  Sun: '☉',
+  Moon: '☽',
+  Mercury: '☿',
+  Venus: '♀',
+  Mars: '♂',
+  Jupiter: '♃',
+  Saturn: '♄',
+  Uranus: '♅',
+  Neptune: '♆',
+  Pluto: '♇',
   'North Node': '☊',
-  'Chiron': '⚷',
+  Chiron: '⚷',
 };
 
-// Aspect colors - Updated with cosmic theme
+/** Traditional Western aspect colors */
 const ASPECT_COLORS: { [key: string]: string } = {
-  'Conjunction': '#FFD700', // Gold
-  'Opposition': '#FF6B6B', // Cosmic Red
-  'Trine': '#4ECDC4', // Cosmic Teal
-  'Square': '#FF8E53', // Cosmic Orange
-  'Sextile': '#00C4FF', // Neon Blue
-  'Quincunx': '#A855F7', // Nebula Purple
-  'Semi-Sextile': '#94A3B8', // Space Gray
+  Conjunction: '#FFD700',
+  Opposition: '#DC143C',
+  Trine: '#228B22',
+  Square: '#FF4500',
+  Sextile: '#1E90FF',
+  Quincunx: '#8B008B',
+  'Semi-Sextile': '#808080',
 };
+
+/** Traditional planetary glyph colors */
+const PLANET_COLORS: { [key: string]: string } = {
+  Sun: '#FFD700',
+  Moon: '#C0C0C0',
+  Mercury: '#FF8C00',
+  Venus: '#2E8B57',
+  Mars: '#DC143C',
+  Jupiter: '#4169E1',
+  Saturn: '#8B7355',
+  Uranus: '#40E0D0',
+  Neptune: '#4169E1',
+  Pluto: '#8B0000',
+  'North Node': '#DAA520',
+  Chiron: '#CD853F',
+};
+
+/** Zodiac by classical element */
+const ELEMENT_COLORS = {
+  fire: '#E74C3C',
+  earth: '#27AE60',
+  air: '#F1C40F',
+  water: '#3498DB',
+};
+
+const ZODIAC_ELEMENTS = [
+  'fire', 'earth', 'air', 'water',
+  'fire', 'earth', 'air', 'water',
+  'fire', 'earth', 'air', 'water',
+] as const;
 
 export default function BirthChartVisualization({ chart }: BirthChartVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -62,7 +90,7 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     if (!ctx) return;
 
     canvas.width = size;
@@ -73,24 +101,20 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
     const url = URL.createObjectURL(svgBlob);
 
     img.onload = () => {
-      // Fill with black background
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = '#0A0A0A';
       ctx.fillRect(0, 0, size, size);
-      
-      // Draw SVG
       ctx.drawImage(img, 0, 0);
-      
-      // Convert to PNG and download
+
       canvas.toBlob((blob) => {
         if (!blob) return;
-        
+
         const pngUrl = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         const birthDate = chart.birth_info.datetime.split('T')[0];
         downloadLink.download = `birth-chart-${birthDate}.png`;
         downloadLink.href = pngUrl;
         downloadLink.click();
-        
+
         URL.revokeObjectURL(pngUrl);
         URL.revokeObjectURL(url);
       });
@@ -102,15 +126,13 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
   useEffect(() => {
     if (!svgRef.current || !chart) return;
 
-    // Clear previous content
     while (svgRef.current.firstChild) {
       svgRef.current.removeChild(svgRef.current.firstChild);
     }
 
     const svg = svgRef.current;
 
-    // Helper function to create SVG element
-    const createSVGElement = (tag: string, attrs: { [key: string]: any }) => {
+    const createSVGElement = (tag: string, attrs: { [key: string]: string | number }) => {
       const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
       Object.entries(attrs).forEach(([key, value]) => {
         elem.setAttribute(key, String(value));
@@ -118,9 +140,7 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
       return elem;
     };
 
-    // Helper to convert degree to position
     const degreeToXY = (degree: number, radius: number) => {
-      // Adjust: 0° = 9 o'clock position (Ascendant), increase counter-clockwise
       const adjustedDegree = chart.ascendant_degree - degree;
       const radian = (adjustedDegree * Math.PI) / 180;
       return {
@@ -129,168 +149,200 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
       };
     };
 
-    // 1. Draw outer zodiac circle with cosmic glow
-    const outerRadius = 250;
-    const zodiacCircle = createSVGElement('circle', {
-      cx: center,
-      cy: center,
-      r: outerRadius,
-      fill: 'none',
-      stroke: '#00C4FF',
-      'stroke-width': 3,
-      'stroke-opacity': 0.8,
-    });
-    svg.appendChild(zodiacCircle);
-    
-    // Add inner glow circle
-    const innerGlowCircle = createSVGElement('circle', {
-      cx: center,
-      cy: center,
-      r: outerRadius - 2,
-      fill: 'none',
-      stroke: '#00C4FF',
-      'stroke-width': 1,
-      'stroke-opacity': 0.3,
-    });
-    svg.appendChild(innerGlowCircle);
+    // Soft parchment-dark center
+    svg.appendChild(
+      createSVGElement('circle', {
+        cx: center,
+        cy: center,
+        r: 270,
+        fill: '#121212',
+      })
+    );
 
-    // 2. Draw zodiac signs (12 divisions)
+    const outerRadius = 250;
     const zodiacSigns = [
       'Aries', 'Taurus', 'Gemini', 'Cancer',
       'Leo', 'Virgo', 'Libra', 'Scorpio',
-      'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+      'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
     ];
 
+    // Colored zodiac band segments by element
     for (let i = 0; i < 12; i++) {
       const startDeg = i * 30;
       const endDeg = (i + 1) * 30;
+      const element = ZODIAC_ELEMENTS[i];
+      const color = ELEMENT_COLORS[element];
 
-      // Draw division line with cosmic styling
-      const lineStart = degreeToXY(startDeg, outerRadius - 30);
-      const lineEnd = degreeToXY(startDeg, outerRadius);
-      const line = createSVGElement('line', {
-        x1: lineStart.x,
-        y1: lineStart.y,
-        x2: lineEnd.x,
-        y2: lineEnd.y,
-        stroke: '#A855F7',
-        'stroke-width': 1.5,
-        'stroke-opacity': 0.6,
+      const outerStart = degreeToXY(startDeg, outerRadius);
+      const outerEnd = degreeToXY(endDeg, outerRadius);
+      const innerStart = degreeToXY(startDeg, outerRadius - 32);
+      const innerEnd = degreeToXY(endDeg, outerRadius - 32);
+
+      const path = createSVGElement('path', {
+        d: [
+          `M ${outerStart.x} ${outerStart.y}`,
+          `A ${outerRadius} ${outerRadius} 0 0 1 ${outerEnd.x} ${outerEnd.y}`,
+          `L ${innerEnd.x} ${innerEnd.y}`,
+          `A ${outerRadius - 32} ${outerRadius - 32} 0 0 0 ${innerStart.x} ${innerStart.y}`,
+          'Z',
+        ].join(' '),
+        fill: color,
+        'fill-opacity': 0.18,
+        stroke: color,
+        'stroke-width': 1,
+        'stroke-opacity': 0.55,
       });
-      svg.appendChild(line);
+      svg.appendChild(path);
+    }
 
-      // Draw zodiac symbol with stellar styling
-      const symbolDeg = startDeg + 15;
-      const symbolPos = degreeToXY(symbolDeg, outerRadius - 15);
+    svg.appendChild(
+      createSVGElement('circle', {
+        cx: center,
+        cy: center,
+        r: outerRadius,
+        fill: 'none',
+        stroke: '#E8E0D0',
+        'stroke-width': 2,
+      })
+    );
+
+    svg.appendChild(
+      createSVGElement('circle', {
+        cx: center,
+        cy: center,
+        r: outerRadius - 32,
+        fill: 'none',
+        stroke: '#E8E0D0',
+        'stroke-width': 1.25,
+        'stroke-opacity': 0.7,
+      })
+    );
+
+    for (let i = 0; i < 12; i++) {
+      const startDeg = i * 30;
+      const element = ZODIAC_ELEMENTS[i];
+      const color = ELEMENT_COLORS[element];
+
+      const lineStart = degreeToXY(startDeg, outerRadius - 32);
+      const lineEnd = degreeToXY(startDeg, outerRadius);
+      svg.appendChild(
+        createSVGElement('line', {
+          x1: lineStart.x,
+          y1: lineStart.y,
+          x2: lineEnd.x,
+          y2: lineEnd.y,
+          stroke: color,
+          'stroke-width': 1.5,
+        })
+      );
+
+      const symbolPos = degreeToXY(startDeg + 15, outerRadius - 16);
       const text = createSVGElement('text', {
         x: symbolPos.x,
         y: symbolPos.y,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle',
-        fill: '#FFD700',
-        'font-size': '24',
+        fill: color,
+        'font-size': '22',
         'font-family': 'serif',
-        'font-weight': 'bold',
+        'font-weight': '700',
       });
       text.textContent = ZODIAC_SYMBOLS[zodiacSigns[i]] || zodiacSigns[i];
       svg.appendChild(text);
     }
 
-    // 3. Draw house circle and divisions with cosmic styling
     const houseRadius = 210;
-    const houseCircle = createSVGElement('circle', {
-      cx: center,
-      cy: center,
-      r: houseRadius,
-      fill: 'none',
-      stroke: '#4ECDC4',
-      'stroke-width': 2,
-      'stroke-opacity': 0.7,
-    });
-    svg.appendChild(houseCircle);
+    svg.appendChild(
+      createSVGElement('circle', {
+        cx: center,
+        cy: center,
+        r: houseRadius,
+        fill: 'none',
+        stroke: '#D0C8B8',
+        'stroke-width': 1.5,
+      })
+    );
 
-    // Draw house cusps
     chart.house_cusps.forEach((cusp) => {
       const cuspPos = degreeToXY(cusp.degree, houseRadius);
-      const centerPos = { x: center, y: center };
+      const isAngular = cusp.house === 1 || cusp.house === 4 || cusp.house === 7 || cusp.house === 10;
 
-      const line = createSVGElement('line', {
-        x1: centerPos.x,
-        y1: centerPos.y,
-        x2: cuspPos.x,
-        y2: cuspPos.y,
-        stroke: '#00C4FF',
-        'stroke-width': 1.5,
-        'stroke-dasharray': '4,4',
-        'stroke-opacity': 0.6,
-      });
-      svg.appendChild(line);
+      svg.appendChild(
+        createSVGElement('line', {
+          x1: center,
+          y1: center,
+          x2: cuspPos.x,
+          y2: cuspPos.y,
+          stroke: isAngular ? '#E8E0D0' : '#6B6560',
+          'stroke-width': isAngular ? 1.75 : 1,
+          'stroke-dasharray': isAngular ? 'none' : '3,3',
+          'stroke-opacity': isAngular ? 0.85 : 0.55,
+        })
+      );
 
-      // House number with cosmic styling
       const labelPos = degreeToXY(cusp.degree, houseRadius - 20);
       const houseText = createSVGElement('text', {
         x: labelPos.x,
         y: labelPos.y,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle',
-        fill: '#FFD700',
-        'font-size': '16',
-        'font-weight': 'bold',
-        'font-family': 'Orbitron, monospace',
+        fill: '#C8C0B0',
+        'font-size': '13',
+        'font-weight': '600',
+        'font-family': 'serif',
       });
       houseText.textContent = String(cusp.house);
       svg.appendChild(houseText);
     });
 
-    // 4. Mark Ascendant with cosmic glow
-    const ascPos = degreeToXY(chart.ascendant_degree, houseRadius + 10);
-    const ascLine = createSVGElement('line', {
-      x1: center,
-      y1: center,
-      x2: ascPos.x,
-      y2: ascPos.y,
-      stroke: '#FFD700',
-      'stroke-width': 4,
-      'stroke-opacity': 0.9,
-    });
-    svg.appendChild(ascLine);
-
+    // Ascendant — traditional thick red
+    const ascPos = degreeToXY(chart.ascendant_degree, houseRadius + 12);
+    svg.appendChild(
+      createSVGElement('line', {
+        x1: center,
+        y1: center,
+        x2: ascPos.x,
+        y2: ascPos.y,
+        stroke: '#DC143C',
+        'stroke-width': 3.5,
+      })
+    );
     const ascText = createSVGElement('text', {
       x: ascPos.x,
       y: ascPos.y,
       'text-anchor': 'middle',
-      fill: '#FFD700',
-      'font-size': '16',
-      'font-weight': 'bold',
+      fill: '#DC143C',
+      'font-size': '13',
+      'font-weight': '700',
+      'font-family': 'serif',
     });
     ascText.textContent = 'ASC';
     svg.appendChild(ascText);
 
-    // 5. Mark MC
-    const mcPos = degreeToXY(chart.midheaven_degree, houseRadius + 10);
-    const mcLine = createSVGElement('line', {
-      x1: center,
-      y1: center,
-      x2: mcPos.x,
-      y2: mcPos.y,
-      stroke: '#4488FF',
-      'stroke-width': 3,
-    });
-    svg.appendChild(mcLine);
-
+    // Midheaven — traditional deep blue
+    const mcPos = degreeToXY(chart.midheaven_degree, houseRadius + 12);
+    svg.appendChild(
+      createSVGElement('line', {
+        x1: center,
+        y1: center,
+        x2: mcPos.x,
+        y2: mcPos.y,
+        stroke: '#1E3A8A',
+        'stroke-width': 3,
+      })
+    );
     const mcText = createSVGElement('text', {
       x: mcPos.x,
       y: mcPos.y,
       'text-anchor': 'middle',
-      fill: '#00C4FF',
-      'font-size': '16',
-      'font-weight': 'bold',
-      'font-family': 'Orbitron, monospace',
+      fill: '#60A5FA',
+      'font-size': '13',
+      'font-weight': '700',
+      'font-family': 'serif',
     });
     mcText.textContent = 'MC';
     svg.appendChild(mcText);
 
-    // 6. Draw aspect lines (in center)
     chart.aspects.forEach((aspect) => {
       const p1 = chart.planet_positions.find((p) => p.name === aspect.planet1);
       const p2 = chart.planet_positions.find((p) => p.name === aspect.planet2);
@@ -299,104 +351,93 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
         const pos1 = degreeToXY(p1.degree, 80);
         const pos2 = degreeToXY(p2.degree, 80);
 
-        const line = createSVGElement('line', {
-          x1: pos1.x,
-          y1: pos1.y,
-          x2: pos2.x,
-          y2: pos2.y,
-          stroke: ASPECT_COLORS[aspect.type] || '#94A3B8',
-          'stroke-width': 2,
-          opacity: 0.8,
-        });
-        svg.appendChild(line);
+        svg.appendChild(
+          createSVGElement('line', {
+            x1: pos1.x,
+            y1: pos1.y,
+            x2: pos2.x,
+            y2: pos2.y,
+            stroke: ASPECT_COLORS[aspect.type] || '#808080',
+            'stroke-width': 1.75,
+            opacity: 0.75,
+          })
+        );
       }
     });
 
-    // 7. Draw planets
     const planetRadius = 180;
     chart.planet_positions.forEach((planet) => {
       const pos = degreeToXY(planet.degree, planetRadius);
+      const color = PLANET_COLORS[planet.name] || '#F5F5F5';
 
-      // Planet symbol with cosmic glow
       const planetText = createSVGElement('text', {
         x: pos.x,
         y: pos.y,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle',
-        fill: '#FFD700',
-        'font-size': '28',
-        'font-weight': 'bold',
+        fill: color,
+        'font-size': '26',
+        'font-weight': '700',
         'font-family': 'serif',
-        'stroke': '#000000',
-        'stroke-width': '0.5',
+        stroke: '#0A0A0A',
+        'stroke-width': '0.8',
       });
       planetText.textContent = PLANET_SYMBOLS[planet.name] || planet.name.slice(0, 2);
       svg.appendChild(planetText);
 
-      // Degree label
       const degreePos = degreeToXY(planet.degree, planetRadius - 25);
       const degreeText = createSVGElement('text', {
         x: degreePos.x,
         y: degreePos.y,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle',
-        fill: '#AAA',
+        fill: '#A8A090',
         'font-size': '10',
+        'font-family': 'serif',
       });
       degreeText.textContent = `${Math.floor(planet.degree_in_sign)}°`;
       svg.appendChild(degreeText);
     });
 
-    // 8. Draw inner circle with cosmic styling
-    const innerCircle = createSVGElement('circle', {
-      cx: center,
-      cy: center,
-      r: 50,
-      fill: 'none',
-      stroke: '#A855F7',
-      'stroke-width': 2,
-      'stroke-opacity': 0.5,
-    });
-    svg.appendChild(innerCircle);
-
+    svg.appendChild(
+      createSVGElement('circle', {
+        cx: center,
+        cy: center,
+        r: 50,
+        fill: 'none',
+        stroke: '#E8E0D0',
+        'stroke-width': 1.5,
+        'stroke-opacity': 0.55,
+      })
+    );
   }, [chart]);
 
   return (
-    <div className="card-glow">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-orbitron font-semibold text-cosmic-400">
-          ✨ Birth Chart Wheel
-        </h3>
+    <div className="relative">
+      <div className="flex flex-wrap items-center justify-end gap-4 mb-6">
         <button
           onClick={handleDownload}
-          className="btn-gold flex items-center space-x-2 text-sm"
+          className="btn-core btn-primary"
           title="Download chart as PNG image"
         >
-          <Download size={18} />
-          <span>Download</span>
+          <Download size={16} />
+          <span>Download PNG</span>
         </button>
       </div>
-      <div className="flex justify-center">
+
+      <div className="relative flex justify-center">
         <svg
           ref={svgRef}
           width={size}
           height={size}
           viewBox={`0 0 ${size} ${size}`}
-          className="bg-gradient-to-br from-cosmic-950 to-space-950 rounded-xl border-2 border-cosmic-500/30"
+          className="max-w-[620px]"
         />
       </div>
-      <div className="mt-6 text-center">
-        <div className="star-separator">
-          <span className="text-stellar-400 font-orbitron">✦</span>
-        </div>
-        <p className="text-cosmic-300 text-sm">
-          Ascendant (ASC) marked in gold at 9 o'clock position
-        </p>
-        <p className="text-nebula-300 text-xs mt-2 font-orbitron">
-          House System: {chart.house_system}
-        </p>
+
+      <div className="mt-6 text-center text-xs tracking-[0.1em] text-ink-muted">
+        Fire · Earth · Air · Water bands · ASC in crimson · MC in blue
       </div>
     </div>
   );
 }
-

@@ -101,27 +101,81 @@ async def geocode_location(request: LocationRequest):
 @router.get("/weather", response_model=WeatherResponse)
 async def get_weather(
     latitude: float = Query(..., ge=-90, le=90),
-    longitude: float = Query(..., ge=-180, le=180)
+    longitude: float = Query(..., ge=-180, le=180),
+    date: Optional[str] = Query(None, description="Date in YYYY-MM-DD format (for forecast)")
 ):
     """
     Get weather data using OpenWeatherMap API
+    Supports both current weather and 5-day forecast
     """
     if not settings.openweathermap_api_key:
         raise HTTPException(status_code=500, detail="OpenWeatherMap API key not configured")
     
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    params = {
-        "lat": latitude,
-        "lon": longitude,
-        "appid": settings.openweathermap_api_key,
-        "units": "metric"
-    }
+    from datetime import datetime, timedelta
+    
+    # If date is provided, use forecast API
+    if date:
+        try:
+            target_date = datetime.strptime(date, '%Y-%m-%d')
+            now = datetime.now()
+            
+            # Check if date is in the past (not supported by OpenWeatherMap)
+            if target_date.date() < now.date():
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Historical weather data is not supported. Please select today or a future date."
+                )
+            
+            # Use forecast API for future dates
+            url = "https://api.openweathermap.org/data/2.5/forecast"
+            params = {
+                "lat": latitude,
+                "lon": longitude,
+                "appid": settings.openweathermap_api_key,
+                "units": "metric",
+                "cnt": 40  # 5 days * 8 intervals per day = 40
+            }
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    else:
+        # Use current weather API
+        url = "https://api.openweathermap.org/data/2.5/weather"
+        params = {
+            "lat": latitude,
+            "lon": longitude,
+            "appid": settings.openweathermap_api_key,
+            "units": "metric"
+        }
     
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
             data = response.json()
+        
+        # Handle forecast response
+        if date:
+            # Find the forecast entry closest to the target date
+            forecast_list = data.get("list", [])
+            if not forecast_list:
+                raise HTTPException(status_code=404, detail="No forecast data available for this date")
+            
+            # Get forecast for the day (use first forecast entry for that day)
+            target_datetime = datetime.strptime(date, '%Y-%m-%d')
+            best_forecast = None
+            min_diff = float('inf')
+            
+            for forecast in forecast_list:
+                forecast_dt = datetime.fromtimestamp(forecast['dt'])
+                diff = abs((forecast_dt.date() - target_datetime.date()).days)
+                if diff < min_diff:
+                    min_diff = diff
+                    best_forecast = forecast
+            
+            if not best_forecast:
+                raise HTTPException(status_code=404, detail="No forecast data available for this date")
+            
+            data = best_forecast
         
         cloud_cover = data.get("clouds", {}).get("all", 0)
         
@@ -185,13 +239,14 @@ async def get_light_pollution(
 async def get_complete_environmental_data(
     latitude: float = Query(..., ge=-90, le=90),
     longitude: float = Query(..., ge=-180, le=180),
-    city: Optional[str] = Query(None, description="City name for context")
+    city: Optional[str] = Query(None, description="City name for context"),
+    date: Optional[str] = Query(None, description="Date in YYYY-MM-DD format (for forecast)")
 ):
     """
     Get complete environmental data (location, weather, light pollution)
     """
     # Get weather and light pollution in parallel
-    weather_data = await get_weather(latitude, longitude)
+    weather_data = await get_weather(latitude, longitude, date)
     light_pollution_data = await get_light_pollution(latitude, longitude)
     
     # Create location response

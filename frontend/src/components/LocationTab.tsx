@@ -1,18 +1,23 @@
-import { useState } from 'react';
-import { MapPin, Search, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Search, Calendar } from 'lucide-react';
 import { geocodeLocation, getCompleteEnvironmentalData } from '../services/api';
+import CelestialLoader from './CelestialLoader';
 import type { Location, EnvironmentalData } from '../types';
 
 interface LocationTabProps {
   location: Location | null;
   setLocation: (location: Location) => void;
   setEnvironmentalData: (data: EnvironmentalData) => void;
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
 }
 
 export default function LocationTab({
   location,
   setLocation,
   setEnvironmentalData,
+  selectedDate,
+  setSelectedDate,
 }: LocationTabProps) {
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
@@ -21,6 +26,27 @@ export default function LocationTab({
   const [elevation, setElevation] = useState('0');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refresh environmental data when date changes and location is set
+  useEffect(() => {
+    if (location && !loading) {
+      const refreshData = async () => {
+        try {
+          const envData = await getCompleteEnvironmentalData(
+            location.latitude,
+            location.longitude,
+            location.city,
+            selectedDate
+          );
+          setEnvironmentalData(envData);
+        } catch (err) {
+          console.error('Failed to refresh environmental data:', err);
+        }
+      };
+      refreshData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate]);
 
   const handleGeocode = async () => {
     if (!city) {
@@ -38,11 +64,12 @@ export default function LocationTab({
       
       console.log('[LOCATION] Set new location:', newLocation);
       
-      // Fetch environmental data
+      // Fetch environmental data with selected date
       const envData = await getCompleteEnvironmentalData(
         locationData.latitude,
         locationData.longitude,
-        city
+        city,
+        selectedDate
       );
       setEnvironmentalData(envData);
       
@@ -80,8 +107,8 @@ export default function LocationTab({
       };
       setLocation(manualLocation);
 
-      // Fetch environmental data
-      const envData = await getCompleteEnvironmentalData(lat, lon);
+      // Fetch environmental data with selected date
+      const envData = await getCompleteEnvironmentalData(lat, lon, undefined, selectedDate);
       setEnvironmentalData(envData);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to fetch environmental data');
@@ -93,17 +120,36 @@ export default function LocationTab({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-          <MapPin className="text-space-500" />
+        <h2 className="text-2xl font-semibold mb-6 flex items-center space-x-3 title-sun">
+          <span className="icon-orb">
+            <MapPin size={20} />
+          </span>
           <span>Set Observation Location</span>
         </h2>
 
+        {/* Date Selection */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-4 text-ink-body">Observation Date</h3>
+          <div className="flex items-center space-x-4">
+            <Calendar className="text-soft-blue" size={24} />
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="input max-w-xs"
+            />
+            <span className="text-sm text-ink-muted">
+              This date will be used for all calculations (Star Search, Sky Map, Astrophotography, etc.)
+            </span>
+          </div>
+        </div>
+
         {/* City Search */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-gray-300">Search by City</h3>
+          <h3 className="text-lg font-semibold mb-4 text-ink-body">Search by City</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 City *
               </label>
               <input
@@ -116,7 +162,7 @@ export default function LocationTab({
               />
             </div>
             <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 Country (optional)
               </label>
               <input
@@ -132,10 +178,10 @@ export default function LocationTab({
               <button
                 onClick={handleGeocode}
                 disabled={loading}
-                className="btn-primary w-full flex items-center justify-center space-x-2"
+              className="btn-core btn-primary w-full flex items-center justify-center space-x-2"
               >
                 {loading ? (
-                  <Loader2 className="animate-spin" size={20} />
+                  <CelestialLoader variant="orbit" size="sm" />
                 ) : (
                   <Search size={20} />
                 )}
@@ -146,13 +192,14 @@ export default function LocationTab({
         </div>
 
         {/* Manual Coordinates */}
-        <div className="border-t border-gray-800 pt-8">
-          <h3 className="text-lg font-semibold mb-4 text-gray-300">
+        <div className="hud-divider" />
+        <div className="pt-2">
+          <h3 className="text-lg font-semibold mb-4 text-ink-body">
             Or Enter Coordinates Manually
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 Latitude (°)
               </label>
               <input
@@ -165,7 +212,7 @@ export default function LocationTab({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 Longitude (°)
               </label>
               <input
@@ -178,7 +225,7 @@ export default function LocationTab({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 Elevation (m)
               </label>
               <input
@@ -193,9 +240,9 @@ export default function LocationTab({
               <button
                 onClick={handleManualCoordinates}
                 disabled={loading}
-                className="btn-secondary w-full"
+                className="btn-core btn-secondary w-full"
               >
-                {loading ? <Loader2 className="animate-spin" size={20} /> : 'Set Location'}
+                {loading ? <CelestialLoader variant="orbit" size="sm" /> : 'Set Location'}
               </button>
             </div>
           </div>
@@ -203,30 +250,30 @@ export default function LocationTab({
 
         {/* Error Display */}
         {error && (
-          <div className="mt-6 bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg">
+          <div className="alert-panel mt-6">
             {error}
           </div>
         )}
 
         {/* Current Location Display */}
         {location && (
-          <div className="mt-8 bg-space-900/20 border border-space-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4 text-space-400">Current Location</h3>
+          <div className="mt-8 data-block is-selected">
+            <h3 className="text-lg font-semibold mb-4 text-violet-soft">Current Location</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-400">Address:</p>
-                <p className="font-medium">{location.formatted_address}</p>
+                <p className="text-ink-muted">Address:</p>
+                <p className="font-medium text-ink-title">{location.formatted_address}</p>
               </div>
               <div>
-                <p className="text-gray-400">Coordinates:</p>
-                <p className="font-medium">
+                <p className="text-ink-muted">Coordinates:</p>
+                <p className="font-medium text-violet-soft">
                   {location.latitude.toFixed(6)}°, {location.longitude.toFixed(6)}°
                 </p>
               </div>
               {location.elevation !== undefined && (
                 <div>
-                  <p className="text-gray-400">Elevation:</p>
-                  <p className="font-medium">{location.elevation.toFixed(0)} m</p>
+                  <p className="text-ink-muted">Elevation:</p>
+                  <p className="font-medium text-ink-title">{location.elevation.toFixed(0)} m</p>
                 </div>
               )}
             </div>
