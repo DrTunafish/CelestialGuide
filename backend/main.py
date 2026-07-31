@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="CelestialGuide Pro API",
     description="Advanced sky visualization and observation planning tool",
-    version="1.0.0",
+    version="1.1.0",
     lifespan=lifespan
 )
 
@@ -67,7 +67,7 @@ async def root():
     """Root endpoint"""
     return {
         "message": "CelestialGuide Pro API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "docs": "/docs"
     }
 
