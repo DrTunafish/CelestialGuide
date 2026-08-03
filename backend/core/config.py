@@ -25,8 +25,10 @@ class Settings(BaseSettings):
     min_altitude: float = 0.0
     
     class Config:
-        env_file = ".env"
         case_sensitive = False
+        env_file = ".env"
+        # Allow reading from environment variables even if .env doesn't exist
+        env_file_encoding = 'utf-8'
 
 
 @lru_cache()
