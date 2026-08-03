@@ -1,4 +1,4 @@
-# CelestialGuide Pro - Frontend
+# CelestialGuide - Frontend
 
 Modern React + TypeScript frontend with dark astronomy theme.
 

@@ -1,6 +1,6 @@
-# 🚀 CelestialGuide Pro - Complete Setup Guide
+# 🚀 CelestialGuide - Complete Setup Guide
 
-This guide will walk you through setting up CelestialGuide Pro from scratch.
+This guide will walk you through setting up CelestialGuide from scratch.
 
 ## 📋 Prerequisites Checklist
 
@@ -44,8 +44,8 @@ You'll need free API keys from these services:
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/celestialguide-pro.git
-cd celestialguide-pro
+git clone https://github.com/yourusername/CelestialGuide.git
+cd CelestialGuide
 ```
 
 ### Step 2: Backend Setup
@@ -129,7 +129,7 @@ python setup_script.py
 **Expected output**:
 ```
 ======================================================================
-CelestialGuide Pro - Complete Setup
+CelestialGuide - Complete Setup
 ======================================================================
 
 Step 1: Initializing database...
@@ -168,7 +168,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 
 **Verify backend is running**:
 - Open browser: http://localhost:8000
-- You should see: `{"message": "CelestialGuide Pro API", "version": "1.0.0"}`
+- You should see: `{"message": "CelestialGuide API", "version": "1.0.0"}`
 - API docs: http://localhost:8000/docs
 
 **Keep this terminal open** - the backend must stay running.
@@ -216,7 +216,7 @@ npm run dev
 
 **Verify frontend is running**:
 - Open browser: http://localhost:3000
-- You should see the CelestialGuide Pro interface
+- You should see the CelestialGuide interface
 
 ---
 
@@ -362,7 +362,7 @@ If you encounter issues:
 
 If you've completed all steps and verification checks pass, congratulations! 
 
-CelestialGuide Pro is now fully operational. 
+CelestialGuide is now fully operational. 
 
 **Happy observing! 🌌✨**
 

@@ -50,9 +50,7 @@ export default function Header({ location, environmentalData, observationTime }:
             <Telescope className="command-header__logo-icon" size={28} />
           </div>
           <div className="command-header__primary">
-            <h1 className="title-sun">
-              CelestialGuide <span className="title-accent">Pro</span>
-            </h1>
+            <h1 className="title-sun">CelestialGuide</h1>
             <div className="command-header__sub">
               Deep-sky tools for precise observation
             </div>

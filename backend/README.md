@@ -1,4 +1,4 @@
-# CelestialGuide Pro - Backend
+# CelestialGuide - Backend
 
 FastAPI-based backend for astronomical calculations and data management.
 

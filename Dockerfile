@@ -1,4 +1,4 @@
-# CelestialGuide Pro — production image for Railway (frontend + backend + catalogs)
+# CelestialGuide — production image for Railway (frontend + backend + catalogs)
 FROM node:20-bookworm-slim AS frontend-build
 
 WORKDIR /frontend

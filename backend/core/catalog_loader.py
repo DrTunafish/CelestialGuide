@@ -461,7 +461,7 @@ def initialize_all_catalogs():
     Downloads and loads all required astronomical catalogs
     """
     print("=" * 60)
-    print("CelestialGuide Pro - Catalog Initialization")
+    print("CelestialGuide - Catalog Initialization")
     print("=" * 60)
     
     try:

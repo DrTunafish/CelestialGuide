@@ -536,13 +536,6 @@
     text-shadow: 0 0 24px rgba(245, 197, 66, 0.12);
   }
 
-  .command-header__primary h1 .title-accent {
-    background: linear-gradient(90deg, #FFE08A 0%, #F5C542 55%, #E0A820 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
   .command-header__sub {
     font-family: 'Space Mono', monospace;
     font-size: 0.72rem;

@@ -20,7 +20,7 @@ class PDFExportRequest(BaseModel):
     target_stars: List[Dict]
     star_map_base64: Optional[str] = None
     observation_notes: Optional[str] = Field(None, description="User observation notes")
-    title: str = Field("CelestialGuide Pro - Observation Plan", description="PDF title")
+    title: str = Field("CelestialGuide - Observation Plan", description="PDF title")
 
 
 @router.post("/generate")

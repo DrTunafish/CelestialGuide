@@ -1,5 +1,5 @@
 """
-CelestialGuide Pro - FastAPI Backend
+CelestialGuide - FastAPI Backend
 Main application entry point
 """
 from contextlib import asynccontextmanager
@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="CelestialGuide Pro API",
+    title="CelestialGuide API",
     description="Advanced sky visualization and observation planning tool",
     version="1.1.1",
     lifespan=lifespan,
@@ -90,7 +90,7 @@ async def health_check():
 async def api_status():
     """API metadata (kept under /api so SPA can own /)"""
     return {
-        "message": "CelestialGuide Pro API",
+        "message": "CelestialGuide API",
         "version": "1.1.1",
         "docs": "/docs",
     }
@@ -127,7 +127,7 @@ else:
     @app.get("/")
     async def root():
         return {
-            "message": "CelestialGuide Pro API",
+            "message": "CelestialGuide API",
             "version": "1.1.1",
             "docs": "/docs",
             "hint": "Frontend static files not found. Build the SPA into backend/static.",

@@ -19,5 +19,5 @@ if [ ! -f "de421.bsp" ]; then
   python -c "from skyfield.api import load; load('de421.bsp')" || true
 fi
 
-echo "[entrypoint] Starting CelestialGuide Pro on port ${PORT:-8000}"
+echo "[entrypoint] Starting CelestialGuide on port ${PORT:-8000}"
 exec python main.py

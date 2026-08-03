@@ -1,4 +1,4 @@
-// Type definitions for CelestialGuide Pro
+// Type definitions for CelestialGuide
 
 export interface Location {
   city: string;

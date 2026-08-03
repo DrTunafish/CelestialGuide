@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CelestialGuide Pro - Complete Setup Script
+CelestialGuide - Complete Setup Script
 Initializes database and loads all astronomical catalogs
 """
 import sys
@@ -17,7 +17,7 @@ from core.catalog_loader import initialize_all_catalogs
 def main():
     """Run complete setup"""
     print("=" * 70)
-    print("CelestialGuide Pro - Complete Setup")
+    print("CelestialGuide - Complete Setup")
     print("=" * 70)
     print()
     

@@ -1,10 +1,10 @@
-# 🔭 CelestialGuide Pro
+# 🔭 CelestialGuide
 
 **Advanced Sky Visualization & Observation Planning Tool**
 
 A professional full-stack web application for astronomers and astrophotographers providing high-precision sky maps, star search, deep sky object imaging planning, and comprehensive environmental data analysis using NASA satellite imagery.
 
-![CelestialGuide Pro](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![CelestialGuide](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green.svg)
 ![React](https://img.shields.io/badge/React-18.2-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)
@@ -108,8 +108,8 @@ A professional full-stack web application for astronomers and astrophotographers
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/celestialguide-pro.git
-cd celestialguide-pro
+git clone https://github.com/DrTunafish/CelestialGuide.git
+cd CelestialGuide
 ```
 
 ### 2. Backend Setup
