@@ -102,16 +102,16 @@ export default function SkyMapTab({ location, observationTime }: SkyMapTabProps)
   return (
     <div className="max-w-6xl mx-auto">
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold flex items-center space-x-2 title-sun">
-            <Map className="text-sun" />
+        <div className="toolbar-row mb-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2 title-sun">
+            <Map className="text-sun shrink-0" />
             <span>Sky Map Generator</span>
           </h2>
           
           {mapData && (
             <button
               onClick={handleDownload}
-              className="btn-core btn-primary flex items-center space-x-2"
+              className="btn-core btn-primary btn-inline flex items-center justify-center gap-2 sm:w-auto"
             >
               <Download size={18} />
               <span>Download PNG</span>

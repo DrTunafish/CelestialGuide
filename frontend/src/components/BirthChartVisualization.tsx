@@ -417,7 +417,7 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
       <div className="flex flex-wrap items-center justify-end gap-4 mb-6">
         <button
           onClick={handleDownload}
-          className="btn-core btn-primary"
+          className="btn-core btn-primary btn-inline sm:w-auto"
           title="Download chart as PNG image"
         >
           <Download size={16} />
@@ -425,13 +425,14 @@ export default function BirthChartVisualization({ chart }: BirthChartVisualizati
         </button>
       </div>
 
-      <div className="relative flex justify-center">
+      <div className="relative flex justify-center overflow-x-auto">
         <svg
           ref={svgRef}
           width={size}
           height={size}
           viewBox={`0 0 ${size} ${size}`}
-          className="max-w-[620px]"
+          className="responsive-svg"
+          preserveAspectRatio="xMidYMid meet"
         />
       </div>
 

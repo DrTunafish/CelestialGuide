@@ -275,7 +275,7 @@ export default function AstrologyTab({ location }: AstrologyTabProps) {
                       type="button"
                       onClick={handleGeocodeBirthPlace}
                       disabled={loadingLocation}
-                      className="btn-core btn-secondary min-w-[12rem]"
+                      className="btn-core btn-secondary w-full md:min-w-[12rem] md:w-auto"
                     >
                       {loadingLocation ? (
                         <span className="flex items-center gap-3">

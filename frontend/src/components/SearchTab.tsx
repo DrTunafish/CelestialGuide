@@ -54,8 +54,8 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
   return (
     <div className="max-w-4xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2 title-sun">
-          <Star className="text-sun" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 title-sun">
+          <Star className="text-sun shrink-0" />
           <span>Star Search</span>
         </h2>
 
@@ -64,7 +64,7 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
           <label className="block text-sm font-medium text-gray-400 mb-2">
             Star Name or HIP ID
           </label>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={query}
@@ -76,7 +76,7 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
             <button
               onClick={handleSearch}
               disabled={loading || !location}
-              className="btn-core btn-primary px-6 flex items-center space-x-2"
+              className="btn-core btn-primary px-6 flex items-center justify-center gap-2 sm:w-auto"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
@@ -123,14 +123,14 @@ export default function SearchTab({ location, observationTime }: SearchTabProps)
                 ? 'bg-green-900/10 border-green-700'
                 : 'bg-red-900/10 border-red-700'
             }`}>
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-1">{result.name}</h3>
+                  <h3 className="text-2xl font-bold text-white mb-1 break-words">{result.name}</h3>
                   {result.hip_id && (
                     <p className="text-sm text-gray-400">HIP {result.hip_id}</p>
                   )}
                 </div>
-                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg self-start ${
                   result.is_visible
                     ? 'bg-green-700 text-white'
                     : 'bg-red-700 text-white'

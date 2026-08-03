@@ -120,8 +120,8 @@ export default function LocationTab({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="card">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center space-x-3 title-sun">
-          <span className="icon-orb">
+        <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3 title-sun">
+          <span className="icon-orb shrink-0">
             <MapPin size={20} />
           </span>
           <span>Set Observation Location</span>
@@ -130,16 +130,18 @@ export default function LocationTab({
         {/* Date Selection */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold mb-4 text-ink-body">Observation Date</h3>
-          <div className="flex items-center space-x-4">
-            <Calendar className="text-soft-blue" size={24} />
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="input max-w-xs"
-            />
+          <div className="stack-mobile items-stretch md:items-center">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <Calendar className="text-soft-blue shrink-0" size={24} />
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="input w-full md:max-w-xs"
+              />
+            </div>
             <span className="text-sm text-ink-muted">
-              This date will be used for all calculations (Star Search, Sky Map, Astrophotography, etc.)
+              Used for Star Search, Sky Map, Astrophotography, and related calculations.
             </span>
           </div>
         </div>
@@ -259,7 +261,7 @@ export default function LocationTab({
         {location && (
           <div className="mt-8 data-block is-selected">
             <h3 className="text-lg font-semibold mb-4 text-violet-soft">Current Location</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-ink-muted">Address:</p>
                 <p className="font-medium text-ink-title">{location.formatted_address}</p>

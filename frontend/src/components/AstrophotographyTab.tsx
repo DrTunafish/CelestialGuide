@@ -212,14 +212,14 @@ export default function AstrophotographyTab({ location, selectedDate }: Astropho
           <div className="space-y-6 mt-6">
             {/* Header */}
             <div className="bg-space-900/30 border border-space-800 rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-space-400">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div className="min-w-0">
+                  <h3 className="text-2xl font-bold text-space-400 break-words">
                     {result.target_name}
                   </h3>
                   <p className="text-sm text-gray-400">{result.target_id}</p>
                 </div>
-                <div className={`text-4xl ${getQualityColor(result.quality_score)}`}>
+                <div className={`text-4xl shrink-0 ${getQualityColor(result.quality_score)}`}>
                   <Target size={48} />
                 </div>
               </div>

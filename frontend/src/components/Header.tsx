@@ -7,9 +7,18 @@ interface HeaderProps {
   observationTime: string;
 }
 
-const formatObservationTime = (timestamp: string) => {
+const formatObservationTime = (timestamp: string, compact = false) => {
   try {
     const date = new Date(timestamp);
+    if (compact) {
+      return date.toLocaleString('en-US', {
+        hour12: false,
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
     return date.toLocaleString('en-US', {
       hour12: false,
       year: 'numeric',
@@ -38,7 +47,7 @@ export default function Header({ location, environmentalData, observationTime }:
       <div className="command-header__inner">
         <div className="command-header__title">
           <div className="command-header__logo" aria-hidden="true">
-            <Telescope size={28} />
+            <Telescope className="command-header__logo-icon" size={28} />
           </div>
           <div className="command-header__primary">
             <h1 className="title-sun">
@@ -53,41 +62,49 @@ export default function Header({ location, environmentalData, observationTime }:
         <div className="command-header__telemetry">
           <div className="telemetry-card">
             <div className="telemetry-label flex items-center gap-2">
-              <MapPin size={14} className="text-soft-blue" /> Active coordinates
+              <MapPin size={14} className="text-soft-blue shrink-0" />
+              <span>Coordinates</span>
             </div>
             <div className="telemetry-value">
               {location
                 ? `${location.latitude.toFixed(3)}° / ${location.longitude.toFixed(3)}°`
                 : 'Awaiting lock'}
             </div>
-            <p className="text-[0.72rem] tracking-[0.08em] text-ink-faint mt-2">
-              {location ? location.formatted_address || location.city : 'No primary site selected'}
+            <p className="telemetry-meta">
+              {location ? location.formatted_address || location.city : 'No site selected'}
             </p>
           </div>
 
           <div className="telemetry-card">
             <div className="telemetry-label flex items-center gap-2">
-              <Activity size={14} className="text-soft-blue" /> Observation clock
+              <Activity size={14} className="text-soft-blue shrink-0" />
+              <span>Clock</span>
             </div>
-            <div className="telemetry-value">{formatObservationTime(observationTime)}</div>
-            <p className="text-[0.72rem] tracking-[0.08em] text-ink-faint mt-2">
-              Synchronized to UTC reference frame
-            </p>
+            <div className="telemetry-value telemetry-value--full">
+              {formatObservationTime(observationTime)}
+            </div>
+            <div className="telemetry-value telemetry-value--compact">
+              {formatObservationTime(observationTime, true)}
+            </div>
+            <p className="telemetry-meta">UTC reference</p>
           </div>
 
           <div className="telemetry-card">
             <div className="telemetry-label flex items-center gap-2">
-              <ThermometerSun size={14} className="text-soft-blue" /> Site conditions
+              <ThermometerSun size={14} className="text-soft-blue shrink-0" />
+              <span>Conditions</span>
             </div>
             {environmentalData ? (
               <div className="space-y-2 text-sm text-ink-body mt-1">
                 <div>
-                  Temp {environmentalData.weather.temperature_c.toFixed(1)}°C · Cloud{' '}
+                  {environmentalData.weather.temperature_c.toFixed(1)}°C · Cloud{' '}
                   {environmentalData.weather.cloud_cover}%
                 </div>
                 <span className={resolveBortleTone(environmentalData.light_pollution.bortle_scale)}>
-                  Bortle {environmentalData.light_pollution.bortle_scale.toFixed(1)} ·{' '}
-                  {environmentalData.light_pollution.description}
+                  Bortle {environmentalData.light_pollution.bortle_scale.toFixed(1)}
+                  <span className="telemetry-bortle-desc">
+                    {' '}· {environmentalData.light_pollution.description}
+                  </span>
                 </span>
               </div>
             ) : (

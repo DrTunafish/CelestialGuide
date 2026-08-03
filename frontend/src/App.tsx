@@ -19,9 +19,6 @@ function App() {
   const [location, setLocation] = useState<Location | null>(null);
   const [environmentalData, setEnvironmentalData] = useState<EnvironmentalData | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-
-  // Convert selectedDate to observationTime
-  // If today, use current time; otherwise use noon UTC of selected date
   const [observationTime, setObservationTime] = useState<string>(new Date().toISOString());
 
   const getObservationTimeFromDate = (dateStr: string): string => {
@@ -54,13 +51,13 @@ function App() {
   }, [activeTab]);
 
   const tabs = [
-    { id: 'location' as Tab, label: 'Location & Date', icon: MapPin, hint: 'Set mission coordinates and observation time' },
-    { id: 'search' as Tab, label: 'Star Search', icon: Search, hint: 'Query stellar catalogues with precision filters' },
-    { id: 'skymap' as Tab, label: 'Sky Map', icon: Map, hint: 'Render projection-ready sky maps' },
-    { id: 'astrophotography' as Tab, label: 'Astrophotography', icon: Camera, hint: 'Plan optimal capture windows' },
-    { id: 'solar-events' as Tab, label: 'Solar & Lunar', icon: Sunrise, hint: 'Track solar and lunar event timelines' },
-    { id: 'weather' as Tab, label: 'Weather Conditions', icon: CloudSun, hint: 'Monitor atmospheric transparency' },
-    { id: 'astrology' as Tab, label: 'Star Reading', icon: Stars, hint: 'Calculate natal charts and readings' },
+    { id: 'location' as Tab, label: 'Location & Date', shortLabel: 'Location', icon: MapPin, hint: 'Set coordinates and observation time' },
+    { id: 'search' as Tab, label: 'Star Search', shortLabel: 'Search', icon: Search, hint: 'Query stellar catalogues' },
+    { id: 'skymap' as Tab, label: 'Sky Map', shortLabel: 'Sky Map', icon: Map, hint: 'Render sky maps' },
+    { id: 'astrophotography' as Tab, label: 'Astrophotography', shortLabel: 'Astro', icon: Camera, hint: 'Plan capture windows' },
+    { id: 'solar-events' as Tab, label: 'Solar & Lunar', shortLabel: 'Solar', icon: Sunrise, hint: 'Sun and moon timelines' },
+    { id: 'weather' as Tab, label: 'Weather Conditions', shortLabel: 'Weather', icon: CloudSun, hint: 'Atmospheric conditions' },
+    { id: 'astrology' as Tab, label: 'Star Reading', shortLabel: 'Reading', icon: Stars, hint: 'Natal charts and readings' },
   ];
 
   return (
@@ -78,14 +75,17 @@ function App() {
       <main className="mission-layout">
         <nav className="mission-nav" data-reveal>
           <div className="mission-nav__panel glass">
-            <div className="mission-nav__label">Observation Deck</div>
-            <div className="mission-nav__grid">
+            <div className="mission-nav__label mission-nav__label--desktop">Observation Deck</div>
+            <div className="mission-nav__grid" role="tablist" aria-label="Main sections">
               {tabs.map((tab, index) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
                     onClick={() => setActiveTab(tab.id)}
                     className={`mission-nav__button ${isActive ? 'mission-nav__button--active' : ''}`}
                     title={tab.hint}
@@ -94,20 +94,17 @@ function App() {
                     <span className="mission-nav__icon">
                       <Icon size={20} />
                     </span>
-                    <span className="flex flex-col text-left gap-0.5">
-                      <span className="text-sm font-semibold tracking-[0.08em] text-ink-title">
-                        {tab.label}
-                      </span>
-                      <span className="text-xs tracking-[0.12em] text-ink-faint hidden 2xl:block">
-                        {tab.hint}
-                      </span>
+                    <span className="mission-nav__copy">
+                      <span className="mission-nav__text-full">{tab.label}</span>
+                      <span className="mission-nav__text-short">{tab.shortLabel}</span>
+                      <span className="mission-nav__hint">{tab.hint}</span>
                     </span>
                   </button>
                 );
               })}
-              <div className="mission-nav__label flex items-center justify-center gap-2 pt-1 text-[0.7rem]">
+              <div className="mission-nav__status">
                 <Gauge size={16} className="text-aurora-teal" />
-                <span className="text-aurora-soft">System status: ready</span>
+                <span className="text-aurora-soft">Ready</span>
               </div>
             </div>
           </div>

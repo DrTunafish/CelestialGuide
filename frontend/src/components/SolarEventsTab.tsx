@@ -134,7 +134,7 @@ export default function SolarEventsTab({ location, selectedDate }: SolarEventsTa
           <h4 className="font-semibold title-sun">Solar Events</h4>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
           <TimeDisplay
             label="Sunrise"
             time={day.sunrise}
@@ -282,15 +282,15 @@ export default function SolarEventsTab({ location, selectedDate }: SolarEventsTa
         </p>
 
         {/* Controls */}
-        <div className="flex items-center space-x-4 mb-6">
-          <div>
+        <div className="stack-mobile items-stretch md:items-end mb-6">
+          <div className="w-full md:w-auto">
             <label className="block text-sm font-medium text-gray-400 mb-2">
               Number of Days
             </label>
             <select
               value={days}
               onChange={(e) => setDays(parseInt(e.target.value))}
-              className="input"
+              className="input w-full md:min-w-[10rem]"
             >
               <option value={3}>3 days</option>
               <option value={7}>7 days</option>
@@ -302,7 +302,7 @@ export default function SolarEventsTab({ location, selectedDate }: SolarEventsTa
           <button
             onClick={loadEvents}
             disabled={loading || !location}
-            className="btn-core btn-primary mt-6 flex items-center space-x-2"
+            className="btn-core btn-primary flex items-center justify-center gap-2 md:w-auto"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
